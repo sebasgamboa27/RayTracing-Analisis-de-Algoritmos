@@ -1,28 +1,9 @@
-import pygame as pg
 import sys
-from random import choice, random
 from os import path
-from settings import *
 from sprites import *
 from tilemap import *
 
 # HUD functions
-def draw_player_health(surf, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGTH = 100
-    BAR_HEIGHT = 20
-    fill = pct * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    if pct > 0.6:
-        col = GREEN
-    elif pct > 0.3:
-        col = YELLOW
-    else:
-        col = RED
-    pg.draw.rect(surf, col, fill_rect)
-    pg.draw.rect(surf, WHITE, outline_rect, 2)
 
 class Game:
     def __init__(self):
@@ -42,26 +23,12 @@ class Game:
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
-        snd_folder = path.join(game_folder, 'snd')
-        music_folder = path.join(game_folder, 'music')
         self.map_folder = path.join(game_folder, 'maps')
         self.title_font = path.join(img_folder, 'ZOMBIE.TTF')
         self.hud_font = path.join(img_folder, 'Impacted2.0.ttf')
         self.dim_screen = pg.Surface(self.screen.get_size()).convert_alpha()
         self.dim_screen.fill((0, 0, 0, 180))
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
-        self.bullet_images = {}
-        self.bullet_images['lg'] = pg.image.load(path.join(img_folder, BULLET_IMG)).convert_alpha()
-        self.bullet_images['sm'] = pg.transform.scale(self.bullet_images['lg'], (10, 10))
-        self.mob_img = pg.image.load(path.join(img_folder, MOB_IMG)).convert_alpha()
-        self.splat = pg.image.load(path.join(img_folder, SPLAT)).convert_alpha()
-        self.splat = pg.transform.scale(self.splat, (64, 64))
-        self.gun_flashes = []
-        for img in MUZZLE_FLASHES:
-            self.gun_flashes.append(pg.image.load(path.join(img_folder, img)).convert_alpha())
-        self.item_images = {}
-        for item in ITEM_IMAGES:
-            self.item_images[item] = pg.image.load(path.join(img_folder, ITEM_IMAGES[item])).convert_alpha()
         # lighting effect
         self.fog = pg.Surface((WIDTH, HEIGHT))
         self.fog.fill(NIGHT_COLOR)
@@ -74,9 +41,6 @@ class Game:
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.items = pg.sprite.Group()
         self.map = TiledMap(path.join(self.map_folder, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map.rect = self.map_img.get_rect()
@@ -88,8 +52,6 @@ class Game:
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
-            if tile_object.name in ['health', 'shotgun']:
-                Item(self, obj_center, tile_object.name)
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.paused = False
@@ -115,37 +77,8 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
-        # game over?
-        if len(self.mobs) == 0:
-            self.playing = True
-        # player hits items
-        hits = pg.sprite.spritecollide(self.player, self.items, False)
-        for hit in hits:
-            if hit.type == 'health' and self.player.health < PLAYER_HEALTH:
-                hit.kill()
-                self.player.add_health(HEALTH_PACK_AMOUNT)
-            if hit.type == 'shotgun':
-                hit.kill()
 
-                self.player.weapon = 'shotgun'
-        # mobs hit player
-        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
-        for hit in hits:
-
-            self.player.health -= MOB_DAMAGE
-            hit.vel = vec(0, 0)
-            if self.player.health <= 0:
-                self.playing = False
-        if hits:
-            self.player.hit()
-            self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
-        # bullets hit mobs
-        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
-        for mob in hits:
-            # hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
-            for bullet in hits[mob]:
-                mob.health -= bullet.damage
-            mob.vel = vec(0, 0)
+        #Agregar codigo en caso de detener juego
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -162,12 +95,9 @@ class Game:
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-        # self.screen.fill(BGCOLOR)
         self.screen.blit(self.map_img, self.camera.apply(self.map))
-        # self.draw_grid()
+       # self.draw_grid()
         for sprite in self.all_sprites:
-            if isinstance(sprite, Mob):
-                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
@@ -179,9 +109,6 @@ class Game:
         if self.night:
             self.render_fog()
         # HUD functions
-        draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
-        self.draw_text('Zombies: {}'.format(len(self.mobs)), self.hud_font, 30, WHITE,
-                       WIDTH - 10, 10, align="topright")
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
@@ -195,8 +122,6 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
-                if event.key == pg.K_h:
-                    self.draw_debug = not self.draw_debug
                 if event.key == pg.K_p:
                     self.paused = not self.paused
                 if event.key == pg.K_n:
