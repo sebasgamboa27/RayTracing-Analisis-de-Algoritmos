@@ -85,8 +85,6 @@ class Game:
                              tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
                 self.player = Player(self, obj_center.x, obj_center.y)
-            if tile_object.name == 'zombie':
-                Mob(self, obj_center.x, obj_center.y)
             if tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
@@ -119,7 +117,7 @@ class Game:
         self.camera.update(self.player)
         # game over?
         if len(self.mobs) == 0:
-            self.playing = False
+            self.playing = True
         # player hits items
         hits = pg.sprite.spritecollide(self.player, self.items, False)
         for hit in hits:
