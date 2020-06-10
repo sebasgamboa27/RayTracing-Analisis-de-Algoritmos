@@ -20,11 +20,11 @@ class Particle:
 
     def look(self, screen, walls):
         self.rays = []
-        for i in range(0, 360, 4):
+        for i in range(40, 80, 8):
             self.rays.append(Ray(self.pos[0], self.pos[1], deg2rad(i)))
 
         for ray in self.rays:
-            closest = 10000000
+            closest = 1000
             closestpt = None
             for wall in walls:
                 pt = ray.cast(wall)

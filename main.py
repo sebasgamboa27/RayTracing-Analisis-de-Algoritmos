@@ -63,7 +63,17 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
 
-                #self.RayWalls.append(Limits(tile_object.x,tile_object.y,tile_object.x+tile_object.width,tile_object.y+tile_object.height))
+                self.RayWalls.append(Limits(tile_object.x,tile_object.y,
+                                            tile_object.x+tile_object.width,tile_object.y))
+
+                self.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
+                                            tile_object.x + tile_object.width, tile_object.y+tile_object.height))
+
+                self.RayWalls.append(Limits(tile_object.x, tile_object.y,
+                                            tile_object.x, tile_object.y+tile_object.height))
+
+                self.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
+                                            tile_object.x + tile_object.width, tile_object.y + tile_object.height))
 
 
         self.camera = Camera(self.map.width, self.map.height)
@@ -72,19 +82,7 @@ class Game:
         self.night = True
         self.particle = Particle()
 
-        for i in range(5):
-            x1 = np.random.randint(0,500)
-            y1  = np.random.randint(0, 500)
-            x2 = np.random.randint(0, 500)
-            y2 = np.random.randint(0, 500)
-            x3 = np.random.randint(0, 500)
-            y3 = np.random.randint(0, 500)
-            self.RayWalls.append(Limits(x1,y1,x2,y2))
 
-        self.RayWalls.append(Limits(0,0,1000,0))
-        self.RayWalls.append(Limits(0, 0, 0, 1000))
-        self.RayWalls.append(Limits(0, 1000, 1000, 1000))
-        self.RayWalls.append(Limits(500, 0, 1000, 1000))
 
 
 
@@ -99,6 +97,7 @@ class Game:
             if not self.paused:
                 self.update()
             self.draw()
+            pg.display.update()
 
 
             if(self.player.pos.x>500 and self.player.pos.x < 2700):
@@ -117,8 +116,6 @@ class Game:
 
             else:
                 self.particle.pos[1] = self.player.pos.y
-
-
 
             pg.display.update()
 
@@ -148,6 +145,7 @@ class Game:
         self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
     def draw(self):
+
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply(self.map))
 
@@ -155,6 +153,7 @@ class Game:
             wall.display(self.screen)
 
         self.particle.look(self.screen, self.RayWalls)
+
 
 
        # self.draw_grid()
@@ -165,6 +164,7 @@ class Game:
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
+
 
 
 
