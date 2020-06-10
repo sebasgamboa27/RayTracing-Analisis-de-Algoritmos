@@ -18,9 +18,9 @@ class Particle:
         for ray in self.rays:
             ray.display(screen)
 
-    def look(self, screen, walls):
+    def look(self, screen, walls,startAngle):
         self.rays = []
-        for i in range(40, 80, 8):
+        for i in range(int(-startAngle), int(-startAngle+40), 6):
             self.rays.append(Ray(self.pos[0], self.pos[1], deg2rad(i)))
 
         for ray in self.rays:

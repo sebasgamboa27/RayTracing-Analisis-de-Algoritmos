@@ -21,6 +21,7 @@ class Game:
 
 
 
+
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -50,7 +51,6 @@ class Game:
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
-        self.RayWalls = []
         self.map = TiledMap(path.join(self.map_folder, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map.rect = self.map_img.get_rect()
@@ -63,16 +63,16 @@ class Game:
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
 
-                self.RayWalls.append(Limits(tile_object.x,tile_object.y,
+                self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
                                             tile_object.x+tile_object.width,tile_object.y))
 
-                self.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
+                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
                                             tile_object.x + tile_object.width, tile_object.y+tile_object.height))
 
-                self.RayWalls.append(Limits(tile_object.x, tile_object.y,
+                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
                                             tile_object.x, tile_object.y+tile_object.height))
 
-                self.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
+                self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
                                             tile_object.x + tile_object.width, tile_object.y + tile_object.height))
 
 
@@ -80,11 +80,6 @@ class Game:
         self.draw_debug = False
         self.paused = False
         self.night = True
-        self.particle = Particle()
-
-
-
-
 
 
     def run(self):
@@ -101,21 +96,21 @@ class Game:
 
 
             if(self.player.pos.x>500 and self.player.pos.x < 2700):
-                self.particle.pos[0]=500
+                self.player.particle.pos[0]=500
 
             elif(self.player.pos.x>2700):
-                self.particle.pos[0] = 500 + (self.player.pos.x - 2700)
+                self.player.particle.pos[0] = 500 + (self.player.pos.x - 2700)
             else:
-                self.particle.pos[0] = self.player.pos.x
+                self.player.particle.pos[0] = self.player.pos.x
 
             if (self.player.pos.y > 400 and self.player.pos.y < 1550):
-                self.particle.pos[1] = 400
+                self.player.particle.pos[1] = 400
 
             elif (self.player.pos.y > 1550):
-                self.particle.pos[1] = 400 + (self.player.pos.y - 1550)
+                self.player.particle.pos[1] = 400 + (self.player.pos.y - 1550)
 
             else:
-                self.particle.pos[1] = self.player.pos.y
+                self.player.particle.pos[1] = self.player.pos.y
 
             pg.display.update()
 
@@ -149,14 +144,14 @@ class Game:
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply(self.map))
 
-        for wall in self.RayWalls:
+        for wall in self.map.RayWalls:
             wall.display(self.screen)
 
-        self.particle.look(self.screen, self.RayWalls)
+        self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
 
 
 
-       # self.draw_grid()
+        #self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
@@ -169,7 +164,6 @@ class Game:
 
 
 
-        # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
         if self.night:
             self.render_fog()
         # HUD functions
@@ -222,3 +216,4 @@ while True:
     g.new()
     g.run()
     g.show_go_screen()
+

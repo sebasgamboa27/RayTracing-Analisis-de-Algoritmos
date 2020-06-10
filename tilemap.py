@@ -1,6 +1,7 @@
 import pygame as pg
 import pytmx
 from settings import *
+from Limits import *
 
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
@@ -23,6 +24,18 @@ class TiledMap:
         self.width = tm.width * tm.tilewidth
         self.height = tm.height * tm.tileheight
         self.tmxdata = tm
+        self.RayWalls = []
+        self.setLimits()
+
+    def setLimits(self):
+        self.RayWalls.append(Limits(0, 0, WIDTH, 0))
+        self.RayWalls.append(Limits(0, 0, 0, HEIGHT))
+        self.RayWalls.append(Limits(0, HEIGHT, WIDTH, HEIGHT))
+        self.RayWalls.append(Limits(WIDTH, 0, WIDTH, HEIGHT))
+
+    def updateLimits(self):
+        for limit in self.RayWalls:
+            limit.update()
 
     def render(self, surface):
         ti = self.tmxdata.get_tile_image_by_gid

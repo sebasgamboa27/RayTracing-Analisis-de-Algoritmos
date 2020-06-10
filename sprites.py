@@ -2,6 +2,7 @@ import pygame as pg
 from random import uniform, choice, randint, random
 from settings import *
 from tilemap import collide_hit_rect
+from particle import *
 vec = pg.math.Vector2
 
 def collide_with_walls(sprite, group, dir):
@@ -38,6 +39,7 @@ class Player(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.pos = vec(x, y)
         self.rot = 0
+        self.particle = Particle()
 
     def get_keys(self):
         self.rot_speed = 0
