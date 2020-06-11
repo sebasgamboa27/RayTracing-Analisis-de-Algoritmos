@@ -59,7 +59,7 @@ class Game:
                              tile_object.y + tile_object.height / 2)
             if tile_object.name == 'player':
                 self.player = Player(self, obj_center.x, obj_center.y)
-            if tile_object.name == 'wall':
+            if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
 
@@ -92,9 +92,8 @@ class Game:
             if not self.paused:
                 self.update()
             self.draw()
-            pg.display.update()
 
-
+            '''
             if(self.player.pos.x>500 and self.player.pos.x < 2700):
                 self.player.particle.pos[0]=500
 
@@ -111,6 +110,11 @@ class Game:
 
             else:
                 self.player.particle.pos[1] = self.player.pos.y
+            '''
+
+            self.player.particle.pos[0] = self.player.pos.x
+            self.player.particle.pos[1] = self.player.pos.y
+
 
             pg.display.update()
 
@@ -122,7 +126,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
-        self.camera.update(self.player)
+        #self.camera.update(self.player)
 
         #Agregar codigo en caso de detener juego
 

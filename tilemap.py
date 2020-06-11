@@ -34,8 +34,11 @@ class TiledMap:
         self.RayWalls.append(Limits(WIDTH, 0, WIDTH, HEIGHT))
 
     def updateLimits(self):
-        for limit in self.RayWalls:
-            limit.update()
+        for layer in self.tmxdata.visible_layers:
+            print(layer)
+
+
+
 
     def render(self, surface):
         ti = self.tmxdata.get_tile_image_by_gid
@@ -45,7 +48,8 @@ class TiledMap:
                     tile = ti(gid)
                     if tile:
                         surface.blit(tile, (x * self.tmxdata.tilewidth,
-                                            y * self.tmxdata.tileheight))
+                                           y * self.tmxdata.tileheight))
+
 
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))
