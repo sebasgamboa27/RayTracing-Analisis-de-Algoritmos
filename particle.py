@@ -26,7 +26,7 @@ class Particle:
                 points.append(self.rays[i].end)
                 points.append(self.rays[i+1].end)
 
-                texture = pygame.image.load("img/light_350_hard.png").convert()
+                texture = pygame.image.load("img/light_small.png").convert()
                 pygame.transform.scale(texture,(100,100))
 
                 pygame.gfxdraw.textured_polygon(game.fog,points,texture,0,0)
@@ -56,6 +56,6 @@ class Particle:
                         closestpt = pt
 
             if closestpt is not None:
-                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
                 ray.end=closestpt
                 ray.dis = dis
