@@ -54,12 +54,16 @@ class Game:
         self.map = TiledMap(path.join(self.map_folder, 'level1.tmx'))
         self.map_img = self.map.make_map()
         self.map.rect = self.map_img.get_rect()
+
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(tile_object.x + tile_object.width / 2,
                              tile_object.y + tile_object.height / 2)
+
             if tile_object.name == 'player':
                 self.player = Player(self, obj_center.x, obj_center.y)
+
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
+
                 Obstacle(self, tile_object.x, tile_object.y,
                          tile_object.width, tile_object.height)
 
@@ -93,24 +97,6 @@ class Game:
                 self.update()
             self.draw()
 
-            '''
-            if(self.player.pos.x>500 and self.player.pos.x < 2700):
-                self.player.particle.pos[0]=500
-
-            elif(self.player.pos.x>2700):
-                self.player.particle.pos[0] = 500 + (self.player.pos.x - 2700)
-            else:
-                self.player.particle.pos[0] = self.player.pos.x
-
-            if (self.player.pos.y > 400 and self.player.pos.y < 1550):
-                self.player.particle.pos[1] = 400
-
-            elif (self.player.pos.y > 1550):
-                self.player.particle.pos[1] = 400 + (self.player.pos.y - 1550)
-
-            else:
-                self.player.particle.pos[1] = self.player.pos.y
-            '''
 
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
@@ -163,10 +149,6 @@ class Game:
         if self.draw_debug:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
-
-
-
-
 
         if self.night:
             self.render_fog()
