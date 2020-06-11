@@ -1,4 +1,6 @@
 import pygame
+import pygame.gfxdraw
+
 
 from numpy import array
 from numpy import deg2rad
@@ -12,11 +14,21 @@ class Particle:
     def __init__(self):
         self.pos = array([0, 0])
 
-    def display(self, screen):
-        #pygame.draw.circle(screen, (255, 255, 255), self.pos, 1, 1)
+    def displayLights(self, screen):
 
-        for ray in self.rays:
-            ray.display(screen)
+        for i in range(0,len(self.rays),2):
+
+            points=[]
+            points.append(self.rays[i].pos)
+            points.append(self.rays[i].end)
+            points.append(self.rays[i+1].end)
+
+            texture = pygame.image.load("img/light_350_hard.png").convert_alpha()
+
+            pygame.gfxdraw.textured_polygon(screen,points,texture,0,0)
+
+
+
 
     def look(self, screen, walls,startAngle):
         self.rays = []
@@ -37,3 +49,5 @@ class Particle:
 
             if closestpt is not None:
                 pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                ray.end=closestpt
+                ray.dis = dis

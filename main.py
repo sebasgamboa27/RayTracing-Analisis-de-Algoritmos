@@ -20,8 +20,6 @@ class Game:
 
 
 
-
-
     def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -138,8 +136,7 @@ class Game:
             wall.display(self.screen)
 
         self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-
-
+        self.player.particle.displayLights(self.screen)
 
         #self.draw_grid()
         for sprite in self.all_sprites:
