@@ -127,6 +127,7 @@ class Game:
         self.fog.blit(self.light_mask, self.light_rect)
         self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
+
     def draw(self):
 
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
@@ -136,7 +137,7 @@ class Game:
             wall.display(self.screen)
 
         self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-        self.player.particle.displayLights(self.screen)
+        self.player.particle.displayLights(self.screen,self)
 
         #self.draw_grid()
         for sprite in self.all_sprites:
@@ -147,8 +148,9 @@ class Game:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
-        if self.night:
-            self.render_fog()
+        #if self.night:
+         #   self.render_fog()
+
         # HUD functions
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))

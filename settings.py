@@ -32,7 +32,7 @@ BARREL_OFFSET = vec(30, 10)
 
 # Effects
 NIGHT_COLOR = (20, 20, 20)
-LIGHT_RADIUS = (900, 900)
+LIGHT_RADIUS = (500, 500)
 LIGHT_MASK = "light_350_soft.png"
 
 # Layers

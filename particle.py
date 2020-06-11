@@ -14,7 +14,9 @@ class Particle:
     def __init__(self):
         self.pos = array([0, 0])
 
-    def displayLights(self, screen):
+    def displayLights(self, screen,game):
+
+        game.fog.fill((20, 20, 20))
 
         for i in range(0,len(self.rays)):
 
@@ -24,9 +26,14 @@ class Particle:
                 points.append(self.rays[i].end)
                 points.append(self.rays[i+1].end)
 
-                texture = pygame.image.load("img/light_350_hard.png").convert_alpha()
+                texture = pygame.image.load("img/light_350_hard.png").convert()
+                pygame.transform.scale(texture,(100,100))
 
-                pygame.gfxdraw.textured_polygon(screen,points,texture,0,0)
+                pygame.gfxdraw.textured_polygon(game.fog,points,texture,0,0)
+
+
+        screen.blit(game.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+
 
 
 
