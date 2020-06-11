@@ -5,7 +5,6 @@ import numpy as np
 from sprites import *
 from tilemap import *
 from Limits import *
-from particle import *
 
 # HUD functions
 

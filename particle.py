@@ -56,6 +56,5 @@ class Particle:
                         closestpt = pt
 
             if closestpt is not None:
-                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
                 ray.end=closestpt
                 ray.dis = dis
