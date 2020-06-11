@@ -61,20 +61,20 @@ class Game:
 
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
 
-                Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height)
+                obstacle = Obstacle(self, tile_object.x, tile_object.y,
+                         tile_object.width, tile_object.height,2)
 
                 self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
-                                            tile_object.x+tile_object.width,tile_object.y))
+                                            tile_object.x+tile_object.width,tile_object.y,obstacle.type))
 
                 self.map.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
-                                            tile_object.x + tile_object.width, tile_object.y+tile_object.height))
+                                            tile_object.x + tile_object.width, tile_object.y+tile_object.height,obstacle.type))
 
                 self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
-                                            tile_object.x, tile_object.y+tile_object.height))
+                                            tile_object.x, tile_object.y+tile_object.height,obstacle.type))
 
                 self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
-                                            tile_object.x + tile_object.width, tile_object.y + tile_object.height))
+                                            tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
 
 
         self.camera = Camera(self.map.width, self.map.height)
@@ -132,8 +132,8 @@ class Game:
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply(self.map))
 
-        for wall in self.map.RayWalls:
-            wall.display(self.screen)
+        #for wall in self.map.RayWalls:
+            #wall.display(self.screen)
 
         self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
         self.player.particle.displayLights(self.screen,self)

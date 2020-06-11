@@ -1,7 +1,6 @@
 import pygame
 
 from numpy import array
-from numpy import linalg
 from numpy import cos,sin
 
 class Ray:
