@@ -40,14 +40,19 @@ class Particle:
 
     def look(self, screen, walls,startAngle):
         self.rays = []
-        for i in range(int(-startAngle), int(-startAngle+40), 7):
+        for i in range(int(-startAngle), int(-startAngle+40), 6):
             self.rays.append(Ray(self.pos[0], self.pos[1], deg2rad(i)))
 
         for ray in self.rays:
             closest = 1000
             closestpt = None
             for wall in walls:
-                pt = ray.cast(wall)
+                if(wall.type == 1):
+                    pt = ray.cast(wall)
+                elif(wall.type == 2):
+                    print("Modo refracción")
+                elif(wall.type == 3):
+                    print("Modo reflejo")
 
                 if pt is not None:
                     dis = linalg.norm(pt - self.pos)
