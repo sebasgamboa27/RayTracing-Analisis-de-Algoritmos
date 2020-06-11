@@ -16,16 +16,17 @@ class Particle:
 
     def displayLights(self, screen):
 
-        for i in range(0,len(self.rays),2):
+        for i in range(0,len(self.rays)):
 
-            points=[]
-            points.append(self.rays[i].pos)
-            points.append(self.rays[i].end)
-            points.append(self.rays[i+1].end)
+            if i<len(self.rays)-1:
+                points=[]
+                points.append(self.rays[i].pos)
+                points.append(self.rays[i].end)
+                points.append(self.rays[i+1].end)
 
-            texture = pygame.image.load("img/light_350_hard.png").convert_alpha()
+                texture = pygame.image.load("img/light_350_hard.png").convert_alpha()
 
-            pygame.gfxdraw.textured_polygon(screen,points,texture,0,0)
+                pygame.gfxdraw.textured_polygon(screen,points,texture,0,0)
 
 
 
