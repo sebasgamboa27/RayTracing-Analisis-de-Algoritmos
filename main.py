@@ -1,10 +1,11 @@
 import sys
 from os import path
 import numpy as np
-
 from sprites import *
 from tilemap import *
 from Limits import *
+from Point import *
+import rt
 
 # HUD functions
 
@@ -45,6 +46,11 @@ class Game:
 
     def new(self):
 
+        segments.append([Point(0, 0), Point(WIDTH, 0)])
+        segments.append([Point(0, 0), Point(0, HEIGHT)])
+        segments.append([Point(0, HEIGHT),Point(WIDTH, HEIGHT)])
+        segments.append([Point(WIDTH, 0), Point(WIDTH, HEIGHT)])
+
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
@@ -75,6 +81,18 @@ class Game:
 
                 self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
                                             tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
+
+                segments.append([Point(tile_object.x, tile_object.y),
+                                 Point(tile_object.x + tile_object.width, tile_object.y)])
+
+                segments.append([Point(tile_object.x, tile_object.y + tile_object.height),
+                                                Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
+
+                segments.append([Point(tile_object.x, tile_object.y),
+                                                Point(tile_object.x, tile_object.y + tile_object.height)])
+
+                segments.append([Point(tile_object.x + tile_object.width, tile_object.y),
+                                                Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
 
 
         self.camera = Camera(self.map.width, self.map.height)
@@ -122,9 +140,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
-        #self.camera.update(self.player)
-
-        #Agregar codigo en caso de detener juego
+        
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -147,11 +163,6 @@ class Game:
         self.fog.fill((20, 20, 20))
 
 
-
-        #self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-        #self.player.particle.displayLights(self.screen,self)
-
-        #self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
@@ -174,26 +185,45 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
+        count = 0
 
-
-        for i in range(round(minW),round(maxW)):
-            for j in range(round(minH),round(maxH)):
+        for i in range(0,WIDTH):
+            for j in range(0,HEIGHT):
                 alpha = 0
+                point = Point(i, j)
 
-                current_ray = Ray(self.player.pos[0],self.player.pos[1],i,j)
-                if (current_ray.dis <= LIGHT_MAX_DISTANCE):
+                source = Point(self.player.pos[0], self.player.pos[1])
 
-                    collision_ray = self.find_collision(current_ray)
+                if(point.x != 352 or point.y != 224 ):
+                    point = Point(i,j)
 
-                    if (collision_ray is not None and collision_ray.dis < current_ray.dis):
-                        alpha = 0
-                    else:
-                        if(current_ray.dis > LIGHT_MAX_DISTANCE):
-                            alpha = 0
-                        else:
-                            alpha = round(((LIGHT_MAX_DISTANCE - current_ray.dis) / LIGHT_MAX_DISTANCE) * 255)
+                    source = Point(self.player.pos[0],self.player.pos[1])
+                    dir = source - point
 
-                pygame.gfxdraw.pixel(self.fog, i, j, (255,255,255,alpha))
+
+                    # distance between point and light source
+                    length = rt.length(dir)
+                    length2 = rt.length(rt.normalize(dir))
+
+                    free = True
+                    for seg in segments:
+                        # check if ray intersects with segment
+                        dist = rt.raySegmentIntersect(point, dir, seg[0], seg[1])
+                        # if intersection, or if intersection is closer than light source
+                        if dist > 0 and length2 > dist:
+                            free = False
+                            break
+
+                    if free:
+
+                        alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
+
+                if(alpha<0):
+                    alpha = 0
+                print(count)
+                count = count + 1
+                pygame.gfxdraw.pixel(self.fog, i, j,(255,255,255,alpha))
+
 
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
@@ -214,6 +244,7 @@ class Game:
             return  Ray(ray.pos[0],ray.pos[1],closestpt[0],closestpt[1])
 
         return None
+
 
     def events(self):
         # catch all events here
@@ -258,5 +289,5 @@ g.show_start_screen()
 g.new()
 while True:
     g.run()
-#g.show_go_screen()
+
 

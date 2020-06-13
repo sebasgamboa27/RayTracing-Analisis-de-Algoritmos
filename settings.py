@@ -1,5 +1,14 @@
+import numpy as np
 import pygame as pg
+from PIL import Image
 vec = pg.math.Vector2
+
+segments = []
+im_file = Image.open("img/map.png")
+ref = np.array(im_file)
+light = np.array([1, 1, 0.75])
+i = Image.new("RGB", (1024, 768), (0, 0, 0) )
+px = np.array(i)
 
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
@@ -16,7 +25,7 @@ CYAN = (0, 255, 255)
 WIDTH = 1024   # 16 * 64 or 32 * 32 or 64 * 16
 HEIGHT = 768  # 16 * 48 or 32 * 24 or 64 * 12
 FPS = 60
-TITLE = "Tilemap Demo"
+TITLE = "RayTracing"
 BGCOLOR = BROWN
 
 TILESIZE = 64
@@ -44,4 +53,4 @@ EFFECTS_LAYER = 4
 
 #light radius
 
-LIGHT_MAX_DISTANCE = 200
+LIGHT_MAX_DISTANCE = 400
