@@ -2,13 +2,13 @@ import pygame
 
 from numpy import array
 from numpy import cos,sin
+from numpy import linalg
 
 class Ray:
-    def __init__(self, x, y,radius):
-        self.pos = [x, y]
-        self.dir = array([cos(radius), sin(radius)])
-        self.end= [x,y]
-        self.dis = 0
+    def __init__(self, x, y,x2,y2):
+        self.pos = array([x, y])
+        self.dir = array([x2,y2])
+        self.dis = linalg.norm(self.dir - self.pos)
 
     def display(self, screen):
         pygame.draw.line(screen, (255, 255, 255), self.pos, self.pos + self.dir , 1)

@@ -96,7 +96,7 @@ class Game:
 
 
     def run(self):
-        # game loop - set self.playing = False to end the game
+
         self.playing = True
 
         while self.playing:
@@ -104,14 +104,15 @@ class Game:
             self.events()
             if not self.paused:
                 self.update()
-            self.draw()
-
-
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
-
+            self.draw()
+            print("holis")
 
             pg.display.update()
+            #pygame.time.wait(100000000000)
+
+
 
 
     def quit(self):
@@ -141,14 +142,14 @@ class Game:
 
     def draw(self):
 
-        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply(self.map))
 
-        #for wall in self.map.RayWalls:
-            #wall.display(self.screen)
+        self.fog.fill((20, 20, 20))
 
-        self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-        self.player.particle.displayLights(self.screen,self)
+
+
+        #self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
+        #self.player.particle.displayLights(self.screen,self)
 
         #self.draw_grid()
         for sprite in self.all_sprites:
@@ -159,14 +160,60 @@ class Game:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
-        #if self.night:
-         #   self.render_fog()
+        minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
+        if (minW < 0):
+            minW = 0
+        maxW = self.player.pos[0] + LIGHT_MAX_DISTANCE
+        if (maxW > WIDTH):
+            maxW = WIDTH
 
-        # HUD functions
-        if self.paused:
-            self.screen.blit(self.dim_screen, (0, 0))
-            self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
-        pg.display.flip()
+        minH = self.player.pos[1] - LIGHT_MAX_DISTANCE
+        if (minH < 0):
+            minH = 0
+        maxH = self.player.pos[1] + LIGHT_MAX_DISTANCE
+        if (maxH > HEIGHT):
+            maxH = HEIGHT
+
+
+
+        for i in range(round(minW),round(maxW)):
+            for j in range(round(minH),round(maxH)):
+                alpha = 0
+
+                current_ray = Ray(self.player.pos[0],self.player.pos[1],i,j)
+                if (current_ray.dis <= LIGHT_MAX_DISTANCE):
+
+                    collision_ray = self.find_collision(current_ray)
+
+                    if (collision_ray is not None and collision_ray.dis < current_ray.dis):
+                        alpha = 0
+                    else:
+                        if(current_ray.dis > LIGHT_MAX_DISTANCE):
+                            alpha = 0
+                        else:
+                            alpha = round(((LIGHT_MAX_DISTANCE - current_ray.dis) / LIGHT_MAX_DISTANCE) * 255)
+
+                pygame.gfxdraw.pixel(self.fog, i, j, (255,255,255,alpha))
+
+        self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+
+
+    def find_collision(self,ray):
+        closest = 1000
+        closestpt = None
+        for wall in self.map.RayWalls:
+            pt = ray.cast(wall)
+            if pt is not None:
+                dis = linalg.norm(pt - self.player.pos)
+                if (dis < closest):
+                    closest = dis
+                    closestpt = pt
+
+        if closestpt is not None:
+
+            return  Ray(ray.pos[0],ray.pos[1],closestpt[0],closestpt[1])
+
+        return None
 
     def events(self):
         # catch all events here
@@ -208,8 +255,8 @@ class Game:
 # create the game object
 g = Game()
 g.show_start_screen()
+g.new()
 while True:
-    g.new()
     g.run()
-    g.show_go_screen()
+#g.show_go_screen()
 

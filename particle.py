@@ -123,7 +123,7 @@ class Particle:
 
             if closestpt is not None:
                 ray.end=closestpt
-                ray.dis = dis
+                ray.dis = closest
                 #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 '''if (wall.type == 1):
