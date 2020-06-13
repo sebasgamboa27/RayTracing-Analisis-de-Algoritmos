@@ -117,6 +117,9 @@ class Game:
 
         self.playing = True
 
+        #self.player.pos.x = 600
+        #self.player.pos.y = 580
+
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000.0  # fix for Python 2.x
             self.events()
@@ -187,29 +190,29 @@ class Game:
 
         count = 0
 
-        for i in range(0,WIDTH):
-            for j in range(0,HEIGHT):
+        for i in range(int(minW),int(maxW)):
+            for j in range(int(minH),int(maxH)):
                 alpha = 0
                 point = Point(i, j)
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                if(point.x != 352 or point.y != 224 ):
+                if(point.x != source.x or point.y != source.y ):
                     point = Point(i,j)
 
                     source = Point(self.player.pos[0],self.player.pos[1])
                     dir = source - point
 
 
-                    # distance between point and light source
+
                     length = rt.length(dir)
                     length2 = rt.length(rt.normalize(dir))
 
                     free = True
                     for seg in segments:
-                        # check if ray intersects with segment
+
                         dist = rt.raySegmentIntersect(point, dir, seg[0], seg[1])
-                        # if intersection, or if intersection is closer than light source
+                        
                         if dist > 0 and length2 > dist:
                             free = False
                             break
