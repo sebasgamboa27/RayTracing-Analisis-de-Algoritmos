@@ -128,10 +128,7 @@ class Game:
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
             self.draw()
-            print("holis")
-
             pg.display.update()
-            #pygame.time.wait(100000000000)
 
 
 
@@ -203,8 +200,6 @@ class Game:
                     source = Point(self.player.pos[0],self.player.pos[1])
                     dir = source - point
 
-
-
                     length = rt.length(dir)
                     length2 = rt.length(rt.normalize(dir))
 
@@ -218,7 +213,6 @@ class Game:
                             break
 
                     if free:
-
                         alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
 
                 if(alpha<0):
@@ -244,7 +238,7 @@ class Game:
 
         if closestpt is not None:
 
-            return  Ray(ray.pos[0],ray.pos[1],closestpt[0],closestpt[1])
+            return Ray(ray.pos[0],ray.pos[1],closestpt[0],closestpt[1])
 
         return None
 

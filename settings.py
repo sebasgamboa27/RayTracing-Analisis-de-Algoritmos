@@ -4,8 +4,6 @@ from PIL import Image
 vec = pg.math.Vector2
 
 segments = []
-im_file = Image.open("img/map.png")
-ref = np.array(im_file)
 light = np.array([1, 1, 0.75])
 i = Image.new("RGB", (1024, 768), (0, 0, 0) )
 px = np.array(i)
