@@ -62,7 +62,7 @@ class Game:
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
 
                 obstacle = Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height,1)
+                         tile_object.width, tile_object.height,2)
 
                 self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
                                             tile_object.x+tile_object.width,tile_object.y,obstacle.type))
@@ -149,6 +149,7 @@ class Game:
 
         self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
         self.player.particle.displayLights(self.screen,self)
+        self.player.particle.displayResponseLights(self.screen,self)
 
         #self.draw_grid()
         for sprite in self.all_sprites:

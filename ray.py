@@ -2,6 +2,8 @@ import pygame
 
 from numpy import array
 from numpy import cos,sin
+from Limits import *
+from numpy import linalg
 
 class Ray:
     def __init__(self, x, y,radius):
@@ -9,15 +11,20 @@ class Ray:
         self.dir = array([cos(radius), sin(radius)])
         self.end= [x,y]
         self.dis = 0
+        self.radius = radius
+        self.responseRay = None
 
     def display(self, screen):
         pygame.draw.line(screen, (255, 255, 255), self.pos, self.pos + self.dir , 1)
 
-    # def lookAt(self, x, y):
-    #     # set the diretion 
-    #     self.dir[0] = x - self.pos[0]
-    #     self.dir[1] = y - self.pos[1]
-    #     self.dir = self.dir / linalg.norm(self.dir)
+    def setResponseRay(self, x, y, radius):
+        self.responseRay = Ray(x, y, -radius)
+
+    def refract(self, wall, startPoint):
+        self.responseRay = Ray(startPoint[0], startPoint[1], self.radius)
+
+    def reflect(self, wall, startPoint):
+        self.responseRay = Ray(startPoint[0], startPoint[1], self.radius)
 
     def cast(self, wall):
         # start point
@@ -50,3 +57,20 @@ class Ray:
             y = y1 + t * (y2 - y1)
             pot = array([x,y])
             return pot
+
+
+    def closestWall(self,walls,Startwall):
+        closest = 10000000000
+        finalWall = None
+        for wall in walls:
+            if(wall == Startwall):
+                continue
+            pt = self.cast(wall)
+
+            if pt is not None:
+                dis = linalg.norm(pt - self.pos)
+                if (dis < closest):
+                    closest = dis
+                    finalWall = wall
+
+        return finalWall
