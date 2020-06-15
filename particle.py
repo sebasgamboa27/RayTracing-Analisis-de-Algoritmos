@@ -85,11 +85,11 @@ class Particle:
                 points_end.append(self.rays[i+1].end)
                 points_end.append(self.rays[i].end)
 
-                first_color = pygame.Color(255,255,255,170)
-                second_color = pygame.Color(255, 255, 255, 120)
-                third_color = pygame.Color(255, 255, 255, 100)
-                fourth_color =pygame.Color(255, 255, 255, 80)
-                fifth_color = pygame.Color(255, 255, 255, 60)
+                first_color = pygame.Color(255,255,255,120)
+                second_color = pygame.Color(255, 255, 255, 100)
+                third_color = pygame.Color(255, 255, 255, 80)
+                fourth_color =pygame.Color(255, 255, 255, 60)
+                fifth_color = pygame.Color(255, 255, 255, 40)
 
                 pygame.gfxdraw.filled_polygon(game.fog,points1,first_color)
                 pygame.gfxdraw.filled_polygon(game.fog, points2, second_color)
@@ -104,79 +104,17 @@ class Particle:
         for i in range(0, len(self.ResponseRays)):
 
             if i < len(self.ResponseRays) - 1:
-                points1 = []
-                points2 = []
-                points3 = []
-                points4 = []
-                points_end = []
+                points = []
 
-                half_start_x1 = self.ResponseRays[i].end[0] - (((self.ResponseRays[i].end[0] - self.ResponseRays[i].pos[0]) / 5) * 1)
-                half_start_y1 = self.ResponseRays[i].end[1] - (((self.ResponseRays[i].end[1] - self.ResponseRays[i].pos[1]) / 5) * 1)
-                half_start_x2 = self.ResponseRays[i + 1].end[0] - (
-                            ((self.ResponseRays[i + 1].end[0] - self.ResponseRays[i + 1].pos[0]) / 5) * 1)
-                half_start_y2 = self.ResponseRays[i + 1].end[1] - (
-                            ((self.ResponseRays[i + 1].end[1] - self.ResponseRays[i + 1].pos[1]) / 5) * 1)
+                points.append(self.ResponseRays[i].pos)
+                points.append(self.ResponseRays[i+1].pos)
+                points.append(self.ResponseRays[i + 1].end)
+                points.append(self.ResponseRays[i].end)
 
-                half_end_x1 = self.ResponseRays[i].end[0] - (((self.ResponseRays[i].end[0] - self.ResponseRays[i].pos[0]) / 5) * 2)
-                half_end_y1 = self.ResponseRays[i].end[1] - (((self.ResponseRays[i].end[1] - self.ResponseRays[i].pos[1]) / 5) * 2)
-                half_end_x2 = self.ResponseRays[i + 1].end[0] - (
-                            ((self.ResponseRays[i + 1].end[0] - self.ResponseRays[i + 1].pos[0]) / 5) * 2)
-                half_end_y2 = self.ResponseRays[i + 1].end[1] - (
-                            ((self.ResponseRays[i + 1].end[1] - self.ResponseRays[i + 1].pos[1]) / 5) * 2)
 
-                pointx3_1 = self.ResponseRays[i].end[0] - (((self.ResponseRays[i].end[0] - self.ResponseRays[i].pos[0]) / 5) * 3)
-                pointy3_1 = self.ResponseRays[i].end[1] - (((self.ResponseRays[i].end[1] - self.ResponseRays[i].pos[1]) / 5) * 3)
-                pointx3_2 = self.ResponseRays[i + 1].end[0] - (
-                            ((self.ResponseRays[i + 1].end[0] - self.ResponseRays[i + 1].pos[0]) / 5) * 3)
-                pointy3_2 = self.ResponseRays[i + 1].end[1] - (
-                            ((self.ResponseRays[i + 1].end[1] - self.ResponseRays[i + 1].pos[1]) / 5) * 3)
+                first_color = pygame.Color(255, 255, 255, 25)
 
-                pointx4_1 = self.ResponseRays[i].end[0] - (((self.ResponseRays[i].end[0] - self.ResponseRays[i].pos[0]) / 5) * 4)
-                pointy4_1 = self.ResponseRays[i].end[1] - (((self.ResponseRays[i].end[1] - self.ResponseRays[i].pos[1]) / 5) * 4)
-                pointx4_2 = self.ResponseRays[i + 1].end[0] - (
-                            ((self.ResponseRays[i + 1].end[0] - self.ResponseRays[i + 1].pos[0]) / 5) * 4)
-                pointy4_2 = self.ResponseRays[i + 1].end[1] - (
-                            ((self.ResponseRays[i + 1].end[1] - self.ResponseRays[i + 1].pos[1]) / 5) * 4)
-
-                half_start1 = [half_start_x1, half_start_y1]
-                half_start2 = [half_start_x2, half_start_y2]
-
-                half_end1 = [half_end_x1, half_end_y1]
-                half_end2 = [half_end_x2, half_end_y2]
-
-                point3_1 = [pointx3_1, pointy3_1]
-                point3_2 = [pointx3_2, pointy3_2]
-
-                point4_1 = [pointx4_1, pointy4_1]
-                point4_2 = [pointx4_2, pointy4_2]
-
-                points1.append(self.ResponseRays[i].pos)
-                points1.append(point4_1)
-                points1.append(point4_2)
-
-                points2.append(point3_2)
-                points2.append(point3_1)
-                points2.append(point4_1)
-                points2.append(point4_2)
-
-                points3.append(point3_2)
-                points3.append(point3_1)
-                points3.append(half_end1)
-                points3.append(half_end2)
-
-                points4.append(half_start2)
-                points4.append(half_start1)
-                points4.append(half_end1)
-                points4.append(half_end2)
-
-                points_end.append(half_start1)
-                points_end.append(half_start2)
-                points_end.append(self.ResponseRays[i + 1].end)
-                points_end.append(self.ResponseRays[i].end)
-
-                first_color = pygame.Color(255, 255, 255, 200)
-
-                pygame.gfxdraw.filled_polygon(game.fog, points1, first_color)
+                pygame.gfxdraw.filled_polygon(game.fog, points, first_color)
 
 
         screen.blit(game.fog, (0, 0), special_flags=pygame.BLEND_MULT)
@@ -210,7 +148,7 @@ class Particle:
             if closestpt is not None:
                 ray.end=closestpt
                 ray.dis = dis
-                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 if (finalWall.type == 2):
                     ray.refract(finalWall, closestpt)
@@ -218,7 +156,8 @@ class Particle:
                     castPt = ray.responseRay.cast(endWall)
                     if castPt is not None:
                         self.ResponseRays.append(ray.responseRay)
-                        pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)
+                        ray.responseRay.end = castPt
+                        #pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)
 
 
                 elif (finalWall.type == 3):
@@ -227,4 +166,5 @@ class Particle:
                     castPt = ray.responseRay.cast(endWall)
                     if castPt is not None:
                         self.ResponseRays.append(ray.responseRay)
-                        pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)
+                        ay.responseRay.end = castPt
+                        #pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)
