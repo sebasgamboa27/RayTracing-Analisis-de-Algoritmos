@@ -112,7 +112,7 @@ class Particle:
                 points.append(self.ResponseRays[i].end)
 
 
-                first_color = pygame.Color(255, 255, 255, 25)
+                first_color = pygame.Color(255, 255, 255, 60)
 
                 pygame.gfxdraw.filled_polygon(game.fog, points, first_color)
 
@@ -135,6 +135,7 @@ class Particle:
             closestpt = None
 
             for wall in walls:
+                #wall.display(screen)
 
                 pt = ray.cast(wall)
 
@@ -151,7 +152,7 @@ class Particle:
                 #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 if (finalWall.type == 2):
-                    ray.refract(finalWall, closestpt)
+                    ray.refract(closestpt)
                     endWall = ray.closestWall(walls, finalWall)
                     castPt = ray.responseRay.cast(endWall)
                     if castPt is not None:
@@ -161,10 +162,13 @@ class Particle:
 
 
                 elif (finalWall.type == 3):
-                    ray.reflect(finalWall, closestpt)
-                    endWall = ray.closestWall(walls, finalWall)
-                    castPt = ray.responseRay.cast(endWall)
+                    ray.reflect(closestpt)
+                    reflectionWall = ray.createReflectionWall(finalWall, closestpt)
+                    reflectionWall.display(screen)
+                    castPt = ray.responseRay.cast(reflectionWall)
+
+
                     if castPt is not None:
                         self.ResponseRays.append(ray.responseRay)
-                        ay.responseRay.end = castPt
+                        ray.responseRay.end = castPt
                         #pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)

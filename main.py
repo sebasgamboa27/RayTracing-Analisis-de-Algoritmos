@@ -9,13 +9,14 @@ from Limits import *
 # HUD functions
 
 class Game:
-    def __init__(self):
+    def __init__(self,objectType):
         pg.mixer.pre_init(44100, -16, 4, 2048)
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
+        self.objectType = objectType
 
 
 
@@ -62,7 +63,7 @@ class Game:
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
 
                 obstacle = Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height,2)
+                         tile_object.width, tile_object.height,self.objectType)
 
                 self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
                                             tile_object.x+tile_object.width,tile_object.y,obstacle.type))
@@ -207,7 +208,7 @@ class Game:
                     waiting = False
 
 # create the game object
-g = Game()
+g = Game(1)
 g.show_start_screen()
 while True:
     g.new()

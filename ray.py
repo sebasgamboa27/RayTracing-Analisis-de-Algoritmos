@@ -1,9 +1,8 @@
 import pygame
 
-from numpy import array
-from numpy import cos,sin
+from numpy import *
 from Limits import *
-from numpy import linalg
+
 
 class Ray:
     def __init__(self, x, y,radius):
@@ -20,11 +19,11 @@ class Ray:
     def setResponseRay(self, x, y, radius):
         self.responseRay = Ray(x, y, -radius)
 
-    def refract(self, wall, startPoint):
+    def refract(self, startPoint):
         self.responseRay = Ray(startPoint[0], startPoint[1], self.radius)
 
-    def reflect(self, wall, startPoint):
-        self.responseRay = Ray(startPoint[0], startPoint[1], self.radius)
+    def reflect(self,startPoint):
+        self.responseRay = Ray(startPoint[0],startPoint[1],self.radius+deg2rad(180))
 
     def cast(self, wall):
         # start point
@@ -74,3 +73,18 @@ class Ray:
                     finalWall = wall
 
         return finalWall
+
+    def createReflectionWall(self,wall,castPt):
+
+        if(self.pos[0] > wall.a[0] and self.pos[0] < wall.b[0]):
+
+            if(self.pos[1] < castPt[1]):
+                return Limits(wall.a[0], wall.a[1] - 200, wall.b[0], wall.b[1] - 200)
+            else:
+                return Limits(wall.a[0], wall.a[1] + 200, wall.b[0], wall.b[1] + 200)
+        else:
+
+            if (self.pos[1] < castPt[1]):
+                return Limits(wall.a[0]-200, wall.a[1], wall.b[0]-200, wall.b[1])
+            else:
+                return Limits(wall.a[0]+200, wall.a[1], wall.b[0]+200, wall.b[1])
