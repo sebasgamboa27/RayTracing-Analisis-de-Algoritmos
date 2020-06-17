@@ -117,11 +117,11 @@ class Game:
 
         self.playing = True
 
-        #self.player.pos.x = 600
-        #self.player.pos.y = 580
+        self.player.pos.x = 600
+        self.player.pos.y = 580
 
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000.0  # fix for Python 2.x
+            self.dt = self.clock.tick(FPS) / 1000.0 
             self.events()
             if not self.paused:
                 self.update()
@@ -197,7 +197,6 @@ class Game:
                 if(point.x != source.x or point.y != source.y ):
                     point = Point(i,j)
 
-                    source = Point(self.player.pos[0],self.player.pos[1])
                     dir = source - point
 
                     length = rt.length(dir)
