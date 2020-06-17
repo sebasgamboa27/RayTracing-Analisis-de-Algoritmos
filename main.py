@@ -66,33 +66,36 @@ class Game:
                 self.player = Player(self, obj_center.x, obj_center.y)
 
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
+                if (tile_object.x>621 and tile_object.x<660) or (tile_object.x>790 and tile_object.x<860):
+                    print(0)
+                else:
 
-                obstacle = Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height,1)
+                    obstacle = Obstacle(self, tile_object.x, tile_object.y,
+                             tile_object.width, tile_object.height,1)
 
-                self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
-                                            tile_object.x+tile_object.width,tile_object.y,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
+                                                tile_object.x+tile_object.width,tile_object.y,obstacle.type))
 
-                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
-                                            tile_object.x + tile_object.width, tile_object.y+tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
+                                                tile_object.x + tile_object.width, tile_object.y+tile_object.height,obstacle.type))
 
-                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
-                                            tile_object.x, tile_object.y+tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
+                                                tile_object.x, tile_object.y+tile_object.height,obstacle.type))
 
-                self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
-                                            tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
+                                                tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
 
-                segments.append([Point(tile_object.x, tile_object.y),
-                                 Point(tile_object.x + tile_object.width, tile_object.y)])
+                    segments.append([Point(tile_object.x, tile_object.y),
+                                     Point(tile_object.x + tile_object.width, tile_object.y)])
 
-                segments.append([Point(tile_object.x, tile_object.y + tile_object.height),
-                                                Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
+                    segments.append([Point(tile_object.x, tile_object.y + tile_object.height),
+                                                    Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
 
-                segments.append([Point(tile_object.x, tile_object.y),
-                                                Point(tile_object.x, tile_object.y + tile_object.height)])
+                    segments.append([Point(tile_object.x, tile_object.y),
+                                                    Point(tile_object.x, tile_object.y + tile_object.height)])
 
-                segments.append([Point(tile_object.x + tile_object.width, tile_object.y),
-                                                Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
+                    segments.append([Point(tile_object.x + tile_object.width, tile_object.y),
+                                                    Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
 
 
         self.camera = Camera(self.map.width, self.map.height)
