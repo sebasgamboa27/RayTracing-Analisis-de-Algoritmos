@@ -144,13 +144,18 @@ class Game:
 
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.blit(self.map_img, self.camera.apply(self.map))
+        self.fog.fill((20, 20, 20))
+
 
         #for wall in self.map.RayWalls:
             #wall.display(self.screen)
 
-        self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-        self.player.particle.displayLights(self.screen,self)
-        self.player.particle.displayResponseLights(self.screen,self)
+        if(self.player.particle.on):
+            self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
+            self.player.particle.displayLights(self.screen,self)
+            self.player.particle.displayResponseLights(self.screen,self)
+
+        self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
         #self.draw_grid()
         for sprite in self.all_sprites:
@@ -181,7 +186,7 @@ class Game:
                 if event.key == pg.K_p:
                     self.paused = not self.paused
                 if event.key == pg.K_t:
-                    self.changeWallState()
+                    self.player.particle.switchParticle()
 
     def show_start_screen(self):
         pass
@@ -208,7 +213,7 @@ class Game:
                     waiting = False
 
 # create the game object
-g = Game(1)
+g = Game(3)
 g.show_start_screen()
 while True:
     g.new()

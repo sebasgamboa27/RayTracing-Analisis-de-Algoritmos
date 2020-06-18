@@ -13,11 +13,12 @@ from ray import *
 class Particle:
     def __init__(self):
         self.pos = array([0, 0])
+        self.on = True
+
+    def switchParticle(self):
+        self.on = not self.on
 
     def displayLights(self, screen,game):
-
-
-        game.fog.fill((20, 20, 20))
 
         for i in range(0,len(self.rays)):
 
@@ -117,8 +118,6 @@ class Particle:
                 pygame.gfxdraw.filled_polygon(game.fog, points, first_color)
 
 
-        screen.blit(game.fog, (0, 0), special_flags=pygame.BLEND_MULT)
-
 
 
 
@@ -164,7 +163,7 @@ class Particle:
                 elif (finalWall.type == 3):
                     ray.reflect(closestpt)
                     reflectionWall = ray.createReflectionWall(finalWall, closestpt)
-                    reflectionWall.display(screen)
+                    #reflectionWall.display(screen)
                     castPt = ray.responseRay.cast(reflectionWall)
 
 
