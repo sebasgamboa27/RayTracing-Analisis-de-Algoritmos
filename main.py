@@ -77,22 +77,14 @@ class Game:
                 self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
                                             tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
 
-
+        self.map.RayWalls.append(Limits(0,0,1024,0))
+        self.map.RayWalls.append(Limits(0,0,1024,0))
+        self.map.RayWalls.append(Limits(0,768,1024,768))
+        self.map.RayWalls.append(Limits(1024,768, 1024, 0))
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.paused = False
         self.night = True
-
-    def changeWallState(self):
-        global LIGHT_CURRENT_MODE
-
-        if(LIGHT_CURRENT_MODE >= 2):
-            LIGHT_CURRENT_MODE = 1
-        else:
-            LIGHT_CURRENT_MODE += 1
-
-        for wall in self.map.RayWalls:
-            wall.type = LIGHT_CURRENT_MODE
 
 
 
@@ -213,7 +205,7 @@ class Game:
                     waiting = False
 
 # create the game object
-g = Game(3)
+g = Game(1)
 g.show_start_screen()
 while True:
     g.new()

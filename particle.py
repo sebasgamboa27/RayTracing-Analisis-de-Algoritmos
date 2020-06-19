@@ -1,9 +1,6 @@
 import pygame
 import pygame.gfxdraw
 
-
-from numpy import array
-from numpy import deg2rad
 from numpy import linalg
 
 
@@ -14,6 +11,62 @@ class Particle:
     def __init__(self):
         self.pos = array([0, 0])
         self.on = True
+
+
+    def inRange(self,x,y):
+        ray1 = self.rays[0]
+        ray2 = self.rays[self.rays.__len__() - 1]
+        recta1 = [self.pos, ray1.end]
+        recta2 = [self.pos, ray2.end]
+        recta3 = [ray1.end,ray2.end]
+        rectaImaginaria = [[x,y],[10000000,y]]
+        intersecciones = 0
+
+
+        if(self.isIntersection(rectaImaginaria,recta1)):
+            intersecciones+=1
+
+        if (self.isIntersection(rectaImaginaria, recta2)):
+            intersecciones+=1
+
+        if (self.isIntersection(rectaImaginaria, recta3)):
+            intersecciones+=1
+
+        if (intersecciones == 0):
+            return False
+
+        return not intersecciones%2 == 0
+
+    def isIntersection(self,line1, line2):
+        # start point
+        x1 = line2[0][0]
+        y1 = line2[0][1]
+        # end point
+        x2 = line2[1][0]
+        y2 = line2[1][1]
+
+        # position of the pixel line
+        x3 = line1[0][0]
+        y3 = line1[0][1]
+        x4 = line1[1][0]
+        y4 = line1[1][1]
+
+        # denominator
+        den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        # numerator
+        num = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)
+        if den == 0:
+            return False
+
+        # formulars
+        t = num / den
+        u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den
+
+        if t > 0 and t < 1 and u > 0:
+            return True
+
+        return False
+
 
     def switchParticle(self):
         self.on = not self.on
@@ -146,9 +199,9 @@ class Particle:
                         finalWall = wall
 
             if closestpt is not None:
-                ray.end=closestpt
+                ray.end = closestpt
                 ray.dis = dis
-                #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 if (finalWall.type == 2):
                     ray.refract(closestpt)
@@ -171,3 +224,7 @@ class Particle:
                         self.ResponseRays.append(ray.responseRay)
                         ray.responseRay.end = castPt
                         #pygame.draw.line(screen, (255, 255, 255), ray.responseRay.pos, array(castPt, int), 2)
+
+        pygame.draw.circle(screen,(255,255,255),(110,100),5)
+
+        print(self.inRange(110,110))
