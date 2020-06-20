@@ -1,7 +1,11 @@
 import sys
 from os import path
+import time
+
 import numpy as np
 
+import vectorOperation
+from Pixel import Point
 from sprites import *
 from tilemap import *
 from Limits import *
@@ -63,19 +67,37 @@ class Game:
             if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
 
                 obstacle = Obstacle(self, tile_object.x, tile_object.y,
-                         tile_object.width, tile_object.height,self.objectType)
+                                    tile_object.width, tile_object.height, self.objectType)
 
-                self.map.RayWalls.append(Limits(tile_object.x,tile_object.y,
-                                            tile_object.x+tile_object.width,tile_object.y,obstacle.type))
+                if (tile_object.x > 621 and tile_object.x < 660) or (tile_object.x > 790 and tile_object.x < 860):
+                    print(0)
+                else:
 
-                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y+tile_object.height,
-                                            tile_object.x + tile_object.width, tile_object.y+tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
+                                                    tile_object.x + tile_object.width, tile_object.y, obstacle.type))
 
-                self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
-                                            tile_object.x, tile_object.y+tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x, tile_object.y + tile_object.height,
+                                                    tile_object.x + tile_object.width,
+                                                    tile_object.y + tile_object.height, obstacle.type))
 
-                self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y ,
-                                            tile_object.x + tile_object.width, tile_object.y + tile_object.height,obstacle.type))
+                    self.map.RayWalls.append(Limits(tile_object.x, tile_object.y,
+                                                    tile_object.x, tile_object.y + tile_object.height, obstacle.type))
+
+                    self.map.RayWalls.append(Limits(tile_object.x + tile_object.width, tile_object.y,
+                                                    tile_object.x + tile_object.width,
+                                                    tile_object.y + tile_object.height, obstacle.type))
+
+                    segments.append([Point(tile_object.x, tile_object.y),
+                                     Point(tile_object.x + tile_object.width, tile_object.y)])
+
+                    segments.append([Point(tile_object.x, tile_object.y + tile_object.height),
+                                     Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
+
+                    segments.append([Point(tile_object.x, tile_object.y),
+                                     Point(tile_object.x, tile_object.y + tile_object.height)])
+
+                    segments.append([Point(tile_object.x + tile_object.width, tile_object.y),
+                                     Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
 
         self.map.RayWalls.append(Limits(0,0,1024,0))
         self.map.RayWalls.append(Limits(0,0,1024,0))
@@ -88,9 +110,11 @@ class Game:
 
 
     def pathTracer(self):
+
         minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
         if (minW < 0):
             minW = 0
+
         maxW = self.player.pos[0] + LIGHT_MAX_DISTANCE
         if (maxW > WIDTH):
             maxW = WIDTH
@@ -105,57 +129,66 @@ class Game:
 
         for i in range(int(minW), int(maxW)):
             for j in range(int(minH), int(maxH)):
+
                 alpha = 0
                 point = Point(i, j)
 
-                source = Point(self.player.pos[0], self.player.pos[1])
+                if(self.player.particle.inRange(point.x,point.y)):
 
-                if (point.x != source.x or point.y != source.y):
-                    point = Point(i, j)
+                    source = Point(self.player.pos[0], self.player.pos[1])
 
-                    dir = source - point
+                    if (point.x != source.x or point.y != source.y):
+                        point = Point(i, j)
 
-                    length = rt.length(dir)
-                    length2 = rt.length(rt.normalize(dir))
+                        dir = source - point
 
-                    free = True
-                    for seg in segments:
+                        length = vectorOperation.length(dir)
+                        length2 = vectorOperation.length(vectorOperation.normalize(dir))
 
-                        dist = rt.raySegmentIntersect(point, dir, seg[0], seg[1])
+                        free = True
+                        for seg in segments:
 
-                        if dist > 0 and length2 > dist:
-                            free = False
-                            break
+                            dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
 
-                    if free:
-                        alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
+                            if dist > 0 and length2 > dist:
+                                free = False
+                                break
 
-                if (alpha < 0):
-                    alpha = 0
+                        if free:
+                            alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
 
-                pygame.gfxdraw.pixel(self.fog, i, j, (255, 255, 255, alpha))
+                    if (alpha < 0):
+                        alpha = 0
 
-        self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+                    pygame.gfxdraw.pixel(self.fog, i, j, (255, 255, 255, alpha))
+
+        #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+
+
+
 
 
 
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
+        self.player.particle.on = False
 
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000.0  # fix for Python 2.x
+            self.dt = self.clock.tick(FPS) / 1000.0
+
+            self.player.particle.pos[0] = self.player.pos.x
+            self.player.particle.pos[1] = self.player.pos.y
+
             self.events()
             if not self.paused:
                 self.update()
             self.draw()
 
-
-            self.player.particle.pos[0] = self.player.pos.x
-            self.player.particle.pos[1] = self.player.pos.y
-
-
             pg.display.update()
+
+            #if(self.player.particle.on):
+             #   time.sleep(10)
 
 
     def quit(self):
@@ -188,12 +221,12 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply(self.map))
         self.fog.fill((20, 20, 20))
 
-
-
-        if(self.player.particle.on):
-            self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
-            self.player.particle.displayLights(self.screen,self)
-            self.player.particle.displayResponseLights(self.screen,self)
+        if (self.player.particle.on):
+            self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
+            # self.player.particle.displayLights(self.screen,self)
+            # self.player.particle.displayResponseLights(self.screen,self)
+            self.pathTracer()
+            # self.player.particle.on = False
 
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
@@ -210,6 +243,8 @@ class Game:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
         pg.display.flip()
+
+
 
     def events(self):
         # catch all events here

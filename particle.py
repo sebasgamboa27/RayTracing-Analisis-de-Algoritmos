@@ -171,7 +171,7 @@ class Particle:
         self.ResponseRays = []
         totalRays = 0
         cont = 1
-        for i in range(int(-startAngle - 20), int(-startAngle + 20), 6):
+        for i in range(int(-startAngle - 20), int(-startAngle + 20), 25):
             self.rays.append(Ray(self.pos[0], self.pos[1], deg2rad(i)))
             totalRays += 1
 
@@ -195,7 +195,7 @@ class Particle:
             if closestpt is not None:
                 ray.end = closestpt
                 ray.dis = dis
-                #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 if (finalWall.type == 2):
                     ray.refract(closestpt)

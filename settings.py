@@ -1,5 +1,14 @@
 import pygame as pg
+import numpy as np
+from PIL import Image
+
 vec = pg.math.Vector2
+
+segments = []
+light = np.array([1, 1, 0.75])
+i = Image.new("RGB", (1024, 768), (0, 0, 0) )
+px = np.array(i)
+
 
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
@@ -43,3 +52,4 @@ PLAYER_LAYER = 2
 EFFECTS_LAYER = 4
 
 
+LIGHT_MAX_DISTANCE = 400
