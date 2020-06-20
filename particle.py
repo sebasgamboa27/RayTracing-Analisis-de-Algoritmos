@@ -32,6 +32,10 @@ class Particle:
         if (intersecciones == 0):
             return False
 
+        if(intersecciones < 2):
+            print(intersecciones)
+            print(x)
+
         return not intersecciones % 2 == 0
 
     def isIntersection(self, line1, line2):
@@ -195,7 +199,7 @@ class Particle:
             if closestpt is not None:
                 ray.end = closestpt
                 ray.dis = dis
-                pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
+                #pygame.draw.line(screen, (255, 255, 255), self.pos, array(closestpt, int), 2)
 
                 if (finalWall.type == 2):
                     ray.refract(closestpt)

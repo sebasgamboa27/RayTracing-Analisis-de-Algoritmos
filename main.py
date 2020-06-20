@@ -61,7 +61,7 @@ class Game:
                 obstacle = Obstacle(self, tile_object.x, tile_object.y,
                                     tile_object.width, tile_object.height, self.objectType)
 
-                if (tile_object.x > 621 and tile_object.x < 660) or (tile_object.x > 790 and tile_object.x < 860):
+                if (tile_object.x > 621 and tile_object.x < 660):
                     print(0)
                 else:
 
@@ -95,6 +95,13 @@ class Game:
         self.map.RayWalls.append(Limits(0,0,1024,0))
         self.map.RayWalls.append(Limits(0,768,1024,768))
         self.map.RayWalls.append(Limits(1024,768, 1024, 0))
+
+        segments.append([Point(0,0),Point(1024,0)])
+        segments.append([Point(0, 0), Point(1024, 0)])
+        segments.append([Point(0, 768), Point(1024, 768)])
+        segments.append([Point(1024, 768), Point(1024, 0)])
+
+
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.paused = False
@@ -126,6 +133,7 @@ class Game:
                 point = Point(i, j)
 
                 if(self.player.particle.inRange(point.x,point.y)):
+
 
                     source = Point(self.player.pos[0], self.player.pos[1])
 
