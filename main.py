@@ -205,7 +205,7 @@ class Game:
                     waiting = False
 
 # create the game object
-g = Game(1)
+g = Game(3)
 g.show_start_screen()
 while True:
     g.new()
