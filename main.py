@@ -131,6 +131,7 @@ class Game:
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
             self.draw()
+            self.pathTracer()
             pg.display.update()
 
 
@@ -174,6 +175,8 @@ class Game:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
+
+    def pathTracer(self):
         minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
         if (minW < 0):
             minW = 0
@@ -188,17 +191,16 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
-        count = 0
 
-        for i in range(int(minW),int(maxW)):
-            for j in range(int(minH),int(maxH)):
+        for i in range(int(minW), int(maxW)):
+            for j in range(int(minH), int(maxH)):
                 alpha = 0
                 point = Point(i, j)
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                if(point.x != source.x or point.y != source.y ):
-                    point = Point(i,j)
+                if (point.x != source.x or point.y != source.y):
+                    point = Point(i, j)
 
                     dir = source - point
 
@@ -209,7 +211,7 @@ class Game:
                     for seg in segments:
 
                         dist = rt.raySegmentIntersect(point, dir, seg[0], seg[1])
-                        
+
                         if dist > 0 and length2 > dist:
                             free = False
                             break
@@ -217,12 +219,10 @@ class Game:
                     if free:
                         alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
 
-                if(alpha<0):
+                if (alpha < 0):
                     alpha = 0
-                print(count)
-                count = count + 1
-                pygame.gfxdraw.pixel(self.fog, i, j,(255,255,255,alpha))
 
+                pygame.gfxdraw.pixel(self.fog, i, j, (255, 255, 255, alpha))
 
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
