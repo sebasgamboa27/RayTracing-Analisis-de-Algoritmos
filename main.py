@@ -87,6 +87,57 @@ class Game:
         self.night = True
 
 
+    def pathTracer(self):
+        minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
+        if (minW < 0):
+            minW = 0
+        maxW = self.player.pos[0] + LIGHT_MAX_DISTANCE
+        if (maxW > WIDTH):
+            maxW = WIDTH
+
+        minH = self.player.pos[1] - LIGHT_MAX_DISTANCE
+        if (minH < 0):
+            minH = 0
+        maxH = self.player.pos[1] + LIGHT_MAX_DISTANCE
+        if (maxH > HEIGHT):
+            maxH = HEIGHT
+
+
+        for i in range(int(minW), int(maxW)):
+            for j in range(int(minH), int(maxH)):
+                alpha = 0
+                point = Point(i, j)
+
+                source = Point(self.player.pos[0], self.player.pos[1])
+
+                if (point.x != source.x or point.y != source.y):
+                    point = Point(i, j)
+
+                    dir = source - point
+
+                    length = rt.length(dir)
+                    length2 = rt.length(rt.normalize(dir))
+
+                    free = True
+                    for seg in segments:
+
+                        dist = rt.raySegmentIntersect(point, dir, seg[0], seg[1])
+
+                        if dist > 0 and length2 > dist:
+                            free = False
+                            break
+
+                    if free:
+                        alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
+
+                if (alpha < 0):
+                    alpha = 0
+
+                pygame.gfxdraw.pixel(self.fog, i, j, (255, 255, 255, alpha))
+
+        self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+
+
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -116,7 +167,6 @@ class Game:
         self.all_sprites.update()
         #self.camera.update(self.player)
 
-        #Agregar codigo en caso de detener juego
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -139,8 +189,6 @@ class Game:
         self.fog.fill((20, 20, 20))
 
 
-        #for wall in self.map.RayWalls:
-            #wall.display(self.screen)
 
         if(self.player.particle.on):
             self.player.particle.look(self.screen, self.map.RayWalls,self.player.rot)
@@ -149,7 +197,7 @@ class Game:
 
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
-        #self.draw_grid()
+
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
             if self.draw_debug:
@@ -158,10 +206,6 @@ class Game:
             for wall in self.walls:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
-        #if self.night:
-         #   self.render_fog()
-
-        # HUD functions
         if self.paused:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
