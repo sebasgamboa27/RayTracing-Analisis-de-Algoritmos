@@ -22,14 +22,6 @@ class Game:
         self.load_data()
         self.objectType = objectType
 
-
-
-    def draw_text(self, text, font_name, size, color, x, y, align="topleft"):
-        font = pg.font.Font(font_name, size)
-        text_surface = font.render(text, True, color)
-        text_rect = text_surface.get_rect(**{align: (x, y)})
-        self.screen.blit(text_surface, text_rect)
-
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
@@ -166,9 +158,6 @@ class Game:
 
 
 
-
-
-
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
@@ -183,12 +172,16 @@ class Game:
             self.events()
             if not self.paused:
                 self.update()
+
+            if(self.player.particle.on):
+                self.drawIllumination()
+                time.sleep(20)
+                self.player.particle.on = False
+
             self.draw()
 
-            pg.display.update()
 
-            #if(self.player.particle.on):
-             #   time.sleep(10)
+            pg.display.update()
 
 
     def quit(self):
@@ -221,12 +214,6 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply(self.map))
         self.fog.fill((20, 20, 20))
 
-        if (self.player.particle.on):
-            self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
-            # self.player.particle.displayLights(self.screen,self)
-            # self.player.particle.displayResponseLights(self.screen,self)
-            self.pathTracer()
-            # self.player.particle.on = False
 
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
@@ -243,7 +230,35 @@ class Game:
             self.screen.blit(self.dim_screen, (0, 0))
             self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
         pg.display.flip()
+        self.player.particle.on = False
 
+    def drawIllumination(self):
+
+        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
+        self.screen.blit(self.map_img, self.camera.apply(self.map))
+        self.fog.fill((20, 20, 20))
+
+
+        self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
+        # self.player.particle.displayLights(self.screen,self)
+        # self.player.particle.displayResponseLights(self.screen,self)
+        self.pathTracer()
+        self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+
+
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            if self.draw_debug:
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
+        if self.draw_debug:
+            for wall in self.walls:
+                pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
+
+        if self.paused:
+            self.screen.blit(self.dim_screen, (0, 0))
+            self.draw_text("Paused", self.title_font, 105, RED, WIDTH / 2, HEIGHT / 2, align="center")
+        pg.display.flip()
+        self.player.particle.on = False
 
 
     def events(self):
@@ -259,35 +274,11 @@ class Game:
                 if event.key == pg.K_t:
                     self.player.particle.switchParticle()
 
-    def show_start_screen(self):
-        pass
 
-    def show_go_screen(self):
-        self.screen.fill(BLACK)
-        self.draw_text("GAME OVER", self.title_font, 100, RED,
-                       WIDTH / 2, HEIGHT / 2, align="center")
-        self.draw_text("Press a key to start", self.title_font, 75, WHITE,
-                       WIDTH / 2, HEIGHT * 3 / 4, align="center")
-        pg.display.flip()
-        self.wait_for_key()
-
-    def wait_for_key(self):
-        pg.event.wait()
-        waiting = True
-        while waiting:
-            self.clock.tick(FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    waiting = False
-                    self.quit()
-                if event.type == pg.KEYUP:
-                    waiting = False
 
 # create the game object
 g = Game(3)
-g.show_start_screen()
 while True:
     g.new()
     g.run()
-    g.show_go_screen()
 
