@@ -121,6 +121,7 @@ class Game:
         minH = self.player.pos[1] - LIGHT_MAX_DISTANCE
         if (minH < 0):
             minH = 0
+
         maxH = self.player.pos[1] + LIGHT_MAX_DISTANCE
         if (maxH > HEIGHT):
             maxH = HEIGHT

@@ -17,7 +17,8 @@ class Particle:
         recta1 = [self.pos, ray1.end]
         recta2 = [self.pos, ray2.end]
         recta3 = [ray1.end, ray2.end]
-        rectaImaginaria = [[x, y], [10000000, y]]
+        recta4 = [ray1.pos , ray2.pos]
+        rectaImaginaria = [[x, y], [10000000, 10000000]]
         intersecciones = 0
 
         if (self.isIntersection(rectaImaginaria, recta1)):
@@ -29,14 +30,16 @@ class Particle:
         if (self.isIntersection(rectaImaginaria, recta3)):
             intersecciones += 1
 
+        if (self.isIntersection(rectaImaginaria, recta4)):
+            intersecciones += 1
+
         if (intersecciones == 0):
             return False
 
-        if(intersecciones < 2):
-            print(intersecciones)
-            print(x)
-
-        return not intersecciones % 2 == 0
+        if(intersecciones<2):
+            return True
+        else:
+            return False
 
     def isIntersection(self, line1, line2):
         # start point
