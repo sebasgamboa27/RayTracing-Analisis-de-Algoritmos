@@ -135,31 +135,33 @@ class Game:
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                if (point.x != source.x or point.y != source.y):
-                    point = Point(i, j)
+                if self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[1].end) < 20:
 
-                    dir = source - point
+                    if point.x != source.x or point.y != source.y:
+                        point = Point(i, j)
 
-                    length = vectorOperation.length(dir)
-                    length2 = vectorOperation.length(vectorOperation.normalize(dir))
+                        dir = source - point
 
-                    free = True
-                    for seg in segments:
+                        length = vectorOperation.length(dir)
+                        length2 = vectorOperation.length(vectorOperation.normalize(dir))
 
-                        dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
+                        free = True
+                        for seg in segments:
 
-                        if dist > 0 and length2 > dist:
-                            free = False
-                            break
+                            dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
 
-                    if free:
-                        alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
+                            if dist > 0 and length2 > dist:
+                                free = False
+                                break
 
-                if (alpha < 0):
-                    alpha = 0
+                        if free:
+                            alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
 
-                WHITE[3] = alpha
-                pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
+                    if alpha < 0:
+                        alpha = 0
+
+                    WHITE[3] = alpha
+                    pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
 
         #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
