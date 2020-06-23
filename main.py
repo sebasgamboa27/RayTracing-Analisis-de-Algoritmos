@@ -126,6 +126,11 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
+        middleX = (self.player.particle.rays[0].end[0]+self.player.particle.rays[1].end[0])//2
+        middleY = (self.player.particle.rays[0].end[1] + self.player.particle.rays[1].end[1]) // 2
+
+        midPoint = [middleX,middleY]
+
 
         for i in range(int(minW), int(maxW)):
             for j in range(int(minH), int(maxH)):
@@ -135,7 +140,9 @@ class Game:
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                if self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[1].end) < 20:
+                angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[1].end)
+
+                if angle < 20:
 
                     if point.x != source.x or point.y != source.y:
                         point = Point(i, j)
@@ -155,7 +162,18 @@ class Game:
                                 break
 
                         if free:
-                            alpha = round(((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * 255)
+
+                            newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],midPoint)
+
+                            if newAngle < 10:
+                                angleDim = (10 - newAngle) / 10
+
+                            else:
+                                newAngle = abs(newAngle - 360)
+                                angleDim = (10 - newAngle) / 10
+
+
+                            alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
 
                     if alpha < 0:
                         alpha = 0
