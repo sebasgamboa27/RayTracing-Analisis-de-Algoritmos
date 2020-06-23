@@ -142,7 +142,7 @@ class Game:
 
                 angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[1].end)
 
-                if angle < 20:
+                if angle < 25:
 
                     if point.x != source.x or point.y != source.y:
                         point = Point(i, j)
@@ -165,18 +165,20 @@ class Game:
 
                             newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],midPoint)
 
-                            if newAngle < 10:
-                                angleDim = (10 - newAngle) / 10
+                            if newAngle < 25/2:
+                                angleDim = ((25/2) - newAngle) / (25/2)
 
                             else:
                                 newAngle = abs(newAngle - 360)
-                                angleDim = (10 - newAngle) / 10
+                                angleDim = ((25/2) - newAngle) / (25/2)
 
 
                             alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
 
-                    if alpha < 0:
+
+                    if alpha < 0 or alpha > 255:
                         alpha = 0
+
 
                     WHITE[3] = alpha
                     pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
@@ -303,7 +305,7 @@ class Game:
 
 
 # create the game object
-g = Game(3)
+g = Game(1)
 while True:
     g.new()
     g.run()

@@ -183,7 +183,7 @@ class Particle:
         self.ResponseRays = []
         totalRays = 0
         cont = 1
-        for i in range(int(-startAngle - 20), int(-startAngle + 20), 25):
+        for i in range(int(-startAngle - 25), int(-startAngle + 25), 25):
             self.rays.append(Ray(self.pos[0], self.pos[1], deg2rad(i)))
             totalRays += 1
 
