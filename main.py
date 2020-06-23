@@ -158,7 +158,8 @@ class Game:
                 if (alpha < 0):
                     alpha = 0
 
-                pygame.gfxdraw.pixel(self.fog, i, j, (255, 255, 255, alpha))
+                WHITE[3] = alpha
+                pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
 
         #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
@@ -168,6 +169,7 @@ class Game:
         # game loop - set self.playing = False to end the game
         self.playing = True
         self.player.particle.on = False
+
 
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000.0
@@ -185,8 +187,6 @@ class Game:
                 self.player.particle.on = False
 
             self.draw()
-
-
             pg.display.update()
 
 
