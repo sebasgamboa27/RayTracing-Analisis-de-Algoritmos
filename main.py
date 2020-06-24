@@ -24,7 +24,7 @@ class Game:
         self.objectType = objectType
         self.pixelMap = []
         self.pathTracerDone = False
-        self.animation = False
+        self.animation = True
 
 
     def load_data(self):
@@ -131,10 +131,6 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
-        middleX = (self.player.particle.rays[0].end[0]+self.player.particle.rays[1].end[0])//2
-        middleY = (self.player.particle.rays[0].end[1] + self.player.particle.rays[1].end[1]) // 2
-
-        midPoint = [middleX,middleY]
 
 
         for i in range(int(minW), int(maxW)):
@@ -145,9 +141,9 @@ class Game:
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[1].end)
+                angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[2].end)
 
-                if angle < 25:
+                if 40 >= angle >= 0:
 
                     if point.x != source.x or point.y != source.y:
                         point = Point(i, j)
@@ -168,14 +164,15 @@ class Game:
 
                         if free:
 
-                            newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],midPoint)
+                            newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],self.player.particle.rays[1].end)
 
-                            if newAngle < 25/2:
-                                angleDim = ((25/2) - newAngle) / (25/2)
+
+                            if newAngle < 20:
+                                angleDim = (20 - newAngle) / 20
 
                             else:
                                 newAngle = abs(newAngle - 360)
-                                angleDim = ((25/2) - newAngle) / (25/2)
+                                angleDim = (20 - newAngle) / 20
 
 
                             alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
@@ -187,8 +184,8 @@ class Game:
 
                     WHITE[3] = alpha
                     if(self.animation):
-                        self.pixelMap += [[i, j, WHITE]]
-                        time.sleep(0.001)
+                        self.pixelMap += [[i, j, alpha]]
+                        time.sleep(0.0000000000000000001)
                     else:
                         pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
 
@@ -228,7 +225,7 @@ class Game:
 
             self.draw()
 
-            if (self.pathTracerDone):
+            if self.pathTracerDone and self.animation:
                 print("terminado")
                 time.sleep(20)
                 self.pixelMap = []
@@ -262,7 +259,8 @@ class Game:
 
     def pixelPainter(self):
         for pixel in self.pixelMap:
-            pygame.gfxdraw.pixel(self.fog, pixel[0], pixel[1], pixel[2])
+            WHITE[3] = pixel[2]
+            pygame.gfxdraw.pixel(self.fog, pixel[0], pixel[1], WHITE)
 
 
 
