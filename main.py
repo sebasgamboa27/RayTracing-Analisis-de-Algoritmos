@@ -9,6 +9,7 @@ from Pixel import Point
 from sprites import *
 from tilemap import *
 from Limits import *
+import threading
 
 # HUD functions
 
@@ -21,6 +22,10 @@ class Game:
         self.clock = pg.time.Clock()
         self.load_data()
         self.objectType = objectType
+        self.pixelMap = []
+        self.pathTracerDone = False
+        self.animation = False
+
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -181,9 +186,15 @@ class Game:
 
 
                     WHITE[3] = alpha
-                    pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
+                    if(self.animation):
+                        self.pixelMap += [[i, j, WHITE]]
+                        time.sleep(0.001)
+                    else:
+                        pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
 
         #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+        self.pathTracerDone = True
+        print("terminado")
 
 
 
@@ -196,6 +207,9 @@ class Game:
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000.0
 
+            self.pathTracerTrhead = threading.Thread(target=self.pathTracer)
+
+
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
 
@@ -204,11 +218,22 @@ class Game:
                 self.update()
 
             if(self.player.particle.on):
-                self.drawIllumination()
-                time.sleep(20)
+                if(self.animation):
+                    self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
+                    self.pathTracerTrhead.start()
+                else:
+                    self.drawIllumination()
+                    time.sleep(20)
                 self.player.particle.on = False
 
             self.draw()
+
+            if (self.pathTracerDone):
+                print("terminado")
+                time.sleep(20)
+                self.pixelMap = []
+                self.pathTracerDone = not self.pathTracerDone
+
             pg.display.update()
 
 
@@ -235,6 +260,11 @@ class Game:
         self.fog.blit(self.light_mask, self.light_rect)
         self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
+    def pixelPainter(self):
+        for pixel in self.pixelMap:
+            pygame.gfxdraw.pixel(self.fog, pixel[0], pixel[1], pixel[2])
+
+
 
     def draw(self):
 
@@ -242,7 +272,7 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply(self.map))
         self.fog.fill((20, 20, 20))
 
-
+        self.pixelPainter()
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
 
@@ -268,9 +298,9 @@ class Game:
 
 
         self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
+        self.pathTracer()
         # self.player.particle.displayLights(self.screen,self)
         # self.player.particle.displayResponseLights(self.screen,self)
-        self.pathTracer()
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
 
