@@ -177,6 +177,13 @@ class Game:
 
                             alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
 
+                        else:
+                            #reflexion
+                            #dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
+                            #hay que tirar otro rayo, pero los rayos se tiran con respecto a las paredes, entonces no
+                            #se como tirar el rayo sin una pared, y que pare, pero la funcion es vectorOperation.raraySegmentIntersect
+                            print(reflexion)
+
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
