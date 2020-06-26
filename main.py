@@ -179,10 +179,16 @@ class Game:
 
                         else:
                             #reflexion
-                            #dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
+                            dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
+                            intersectionPoint = self.getIntersectionPoint(point,dir,seg)
+                            #reflectionPoint = pixel final
+                            #funcion rota = []
+                            #for pintor
+                            pygame.draw.circle(self.screen,(255,255,255),array(intersectionPoint,int),2)
+
                             #hay que tirar otro rayo, pero los rayos se tiran con respecto a las paredes, entonces no
                             #se como tirar el rayo sin una pared, y que pare, pero la funcion es vectorOperation.raraySegmentIntersect
-                            print(reflexion)
+                            #print(reflexion)
 
 
                     if alpha < 0 or alpha > 255:
@@ -199,6 +205,39 @@ class Game:
         #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
         self.pathTracerDone = True
         print("terminado")
+
+    def getIntersectionPoint(self, point,dir,seg):
+
+        # start point
+        x1 = seg[0].x
+        y1 = seg[0].y
+        # end point
+        x2 = seg[1].x
+        y2 = seg[1].y
+
+        # position of the ray
+        x3 = point.x
+        y3 = point.y
+        x4 = x3 + dir.x
+        y4 = y3 + dir.y
+
+        # denominator
+        den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        # numerator
+        num = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)
+        if den == 0:
+            return None
+
+        # formulars
+        t = num / den
+        u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den
+
+        if t > 0 and t < 1 and u > 0:
+            # Px, Py
+            x = x1 + t * (x2 - x1)
+            y = y1 + t * (y2 - y1)
+            pot = array([x, y])
+            return pot
 
 
 
