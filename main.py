@@ -10,6 +10,7 @@ from sprites import *
 from tilemap import *
 from Limits import *
 import threading
+from PIL import Image
 
 
 # HUD functions
@@ -25,7 +26,7 @@ class Game:
         self.objectType = objectType
         self.pixelMap = []
         self.pathTracerDone = False
-        self.animation = True
+        self.animation = False
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -128,6 +129,9 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
+        im = Image.open("img/map.png")  # Can be many different formats.
+        pix = im.load()
+
         for i in range(int(minW), int(maxW)):
             for j in range(int(minH), int(maxH)):
 
@@ -175,14 +179,26 @@ class Game:
                         else:
                             # reflexion
                             intersectionPoint = self.getIntersectionPoint(point, dir, seg)
-                            reflectionSpace = self.getReflectionSpace(seg, source) #relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
-                            pygame.draw.line(self.screen,(255,255,255),reflectionSpace[0],reflectionSpace[1],2)
+                            reflectionSpace = self.getReflectionSpace(seg,
+                                                                      source)  # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
+                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
 
-                            #Aqui iria for que pinta con los respectivos calculos del alpha
+                            # Get the width and hight of the image for iterating over
+                            pixelRGB = pix[intersectionPoint[0], intersectionPoint[1]]
 
+                            red = (pixelRGB[0] + 255) // 2
+                            green = (pixelRGB[1] + 255) // 2
+                            blue = (pixelRGB[2] + 255) // 2
+
+                            RGBValue = [red, green, blue, 30]
+
+
+                            for w in range(int(reflectionSpace[2][0]), int(reflectionSpace[1][0])):
+                                for z in range(int(reflectionSpace[1][1]), int(reflectionSpace[2][1])):
+                                    pygame.gfxdraw.pixel(self.fog, w, z, RGBValue)
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
@@ -199,12 +215,12 @@ class Game:
         print("terminado")
 
     def getReflectionSpace(self, seg, source):
-        point1 = [seg[0].x,seg[0].y]  # Establece valor de recta pero será modificado
-        point2 = [seg[1].x,seg[1].y] # Establece valor de recta pero será modificado
-        point3 = [seg[0].x,seg[0].y]
-        point4 = [seg[1].x,seg[1].y]
+        point1 = [seg[0].x, seg[0].y]  # Establece valor de recta pero será modificado
+        point2 = [seg[1].x, seg[1].y]  # Establece valor de recta pero será modificado
+        point3 = [seg[0].x, seg[0].y]
+        point4 = [seg[1].x, seg[1].y]
 
-        print([point1,point2,point3,point4])
+        # print([point1, point2, point3, point4])
 
         if (source.y > seg[0].y and source.y < seg[1].y):
             if (source.x < seg[0].x or source.x < seg[1].x):
@@ -220,7 +236,7 @@ class Game:
             else:
                 point1[1] += 100
                 point2[1] += 100
-        return [point1,point2,point3,point4]
+        return [point1, point2, point3, point4]
 
     def getIntersectionPoint(self, point, dir, seg):
 
