@@ -11,10 +11,11 @@ from tilemap import *
 from Limits import *
 import threading
 
+
 # HUD functions
 
 class Game:
-    def __init__(self,objectType):
+    def __init__(self, objectType):
         pg.mixer.pre_init(44100, -16, 4, 2048)
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -25,7 +26,6 @@ class Game:
         self.pixelMap = []
         self.pathTracerDone = False
         self.animation = True
-
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -44,7 +44,6 @@ class Game:
         self.light_mask = pg.transform.scale(self.light_mask, LIGHT_RADIUS)
         self.light_rect = self.light_mask.get_rect()
 
-
     def new(self):
 
         # initialize all variables and do all the setup for a new game
@@ -61,7 +60,7 @@ class Game:
             if tile_object.name == 'player':
                 self.player = Player(self, obj_center.x, obj_center.y)
 
-            if tile_object.name == 'wall' and (tile_object.x<1050 or tile_object.y<800):
+            if tile_object.name == 'wall' and (tile_object.x < 1050 or tile_object.y < 800):
 
                 obstacle = Obstacle(self, tile_object.x, tile_object.y,
                                     tile_object.width, tile_object.height, self.objectType)
@@ -96,22 +95,20 @@ class Game:
                     segments.append([Point(tile_object.x + tile_object.width, tile_object.y),
                                      Point(tile_object.x + tile_object.width, tile_object.y + tile_object.height)])
 
-        self.map.RayWalls.append(Limits(0,0,1024,0))
-        self.map.RayWalls.append(Limits(0,0,1024,0))
-        self.map.RayWalls.append(Limits(0,768,1024,768))
-        self.map.RayWalls.append(Limits(1024,768, 1024, 0))
+        self.map.RayWalls.append(Limits(0, 0, 1024, 0))
+        self.map.RayWalls.append(Limits(0, 0, 1024, 0))
+        self.map.RayWalls.append(Limits(0, 768, 1024, 768))
+        self.map.RayWalls.append(Limits(1024, 768, 1024, 0))
 
-        segments.append([Point(0,0),Point(1024,0)])
+        segments.append([Point(0, 0), Point(1024, 0)])
         segments.append([Point(0, 0), Point(1024, 0)])
         segments.append([Point(0, 768), Point(1024, 768)])
         segments.append([Point(1024, 768), Point(1024, 0)])
-
 
         self.camera = Camera(self.map.width, self.map.height)
         self.draw_debug = False
         self.paused = False
         self.night = True
-
 
     def pathTracer(self):
 
@@ -131,8 +128,6 @@ class Game:
         if (maxH > HEIGHT):
             maxH = HEIGHT
 
-
-
         for i in range(int(minW), int(maxW)):
             for j in range(int(minH), int(maxH)):
 
@@ -141,7 +136,8 @@ class Game:
 
                 source = Point(self.player.pos[0], self.player.pos[1])
 
-                angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y], self.player.particle.rays[2].end)
+                angle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],
+                                                      self.player.particle.rays[2].end)
 
                 if 40 >= angle >= 0:
 
@@ -164,8 +160,8 @@ class Game:
 
                         if free:
 
-                            newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],self.player.particle.rays[1].end)
-
+                            newAngle = self.player.particle.getAngle([point.x, point.y], [source.x, source.y],
+                                                                     self.player.particle.rays[1].end)
 
                             if newAngle < 20:
                                 angleDim = (20 - newAngle) / 20
@@ -174,39 +170,64 @@ class Game:
                                 newAngle = abs(newAngle - 360)
                                 angleDim = (20 - newAngle) / 20
 
-
                             alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
 
                         else:
-                            #reflexion
-                            dist = vectorOperation.raySegmentIntersect(point, dir, seg[0], seg[1])
-                            intersectionPoint = self.getIntersectionPoint(point,dir,seg)
-                            #reflectionPoint = pixel final
-                            #funcion rota = []
-                            #for pintor
-                            pygame.draw.circle(self.screen,(255,255,255),array(intersectionPoint,int),2)
+                            # reflexion
+                            intersectionPoint = self.getIntersectionPoint(point, dir, seg)
+                            reflectionSpace = self.getReflectionSpace(seg, source) #relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
+                            pygame.draw.line(self.screen,(255,255,255),reflectionSpace[0],reflectionSpace[1],2)
+                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
+                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
+                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
+                            # reflectionPoint = pixel final
+                            # funcion rota = []
+                            # for pintor
+                            pygame.draw.circle(self.screen, (255, 255, 255), array(intersectionPoint, int), 2)
 
-                            #hay que tirar otro rayo, pero los rayos se tiran con respecto a las paredes, entonces no
-                            #se como tirar el rayo sin una pared, y que pare, pero la funcion es vectorOperation.raraySegmentIntersect
-                            #print(reflexion)
-
+                            # hay que tirar otro rayo, pero los rayos se tiran con respecto a las paredes, entonces no
+                            # se como tirar el rayo sin una pared, y que pare, pero la funcion es vectorOperation.raraySegmentIntersect
+                            # print(reflexion)
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
 
-
                     WHITE[3] = alpha
-                    if(self.animation):
+                    if (self.animation):
                         self.pixelMap += [[i, j, alpha]]
                         time.sleep(0.0000000000000000001)
                     else:
                         pygame.gfxdraw.pixel(self.fog, i, j, WHITE)
 
-        #self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
+        # self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
         self.pathTracerDone = True
         print("terminado")
 
-    def getIntersectionPoint(self, point,dir,seg):
+    def getReflectionSpace(self, seg, source):
+        point1 = [seg[0].x,seg[0].y]  # Establece valor de recta pero será modificado
+        point2 = [seg[1].x,seg[1].y] # Establece valor de recta pero será modificado
+        point3 = [seg[0].x,seg[0].y]
+        point4 = [seg[1].x,seg[1].y]
+
+        print([point1,point2,point3,point4])
+
+        if (source.y > seg[0].y and source.y < seg[1].y):
+            if (source.x < seg[0].x or source.x < seg[1].x):
+                point1[0] -= 100
+                point2[0] -= 100
+            else:
+                point1[0] += 100
+                point2[0] += 100
+        else:
+            if (source.y < seg[0].y or source.y < seg[1].y):
+                point1[1] -= 100
+                point2[1] -= 100
+            else:
+                point1[1] += 100
+                point2[1] += 100
+        return [point1,point2,point3,point4]
+
+    def getIntersectionPoint(self, point, dir, seg):
 
         # start point
         x1 = seg[0].x
@@ -239,19 +260,15 @@ class Game:
             pot = array([x, y])
             return pot
 
-
-
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
         self.player.particle.on = False
 
-
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000.0
 
             self.pathTracerTrhead = threading.Thread(target=self.pathTracer)
-
 
             self.player.particle.pos[0] = self.player.pos.x
             self.player.particle.pos[1] = self.player.pos.y
@@ -260,8 +277,8 @@ class Game:
             if not self.paused:
                 self.update()
 
-            if(self.player.particle.on):
-                if(self.animation):
+            if (self.player.particle.on):
+                if (self.animation):
                     self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
                     self.pathTracerTrhead.start()
                 else:
@@ -279,7 +296,6 @@ class Game:
 
             pg.display.update()
 
-
     def quit(self):
         pg.quit()
         sys.exit()
@@ -287,8 +303,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
-        #self.camera.update(self.player)
-
+        # self.camera.update(self.player)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -308,8 +323,6 @@ class Game:
             WHITE[3] = pixel[2]
             pygame.gfxdraw.pixel(self.fog, pixel[0], pixel[1], WHITE)
 
-
-
     def draw(self):
 
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
@@ -318,7 +331,6 @@ class Game:
 
         self.pixelPainter()
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
-
 
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -340,13 +352,11 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply(self.map))
         self.fog.fill((20, 20, 20))
 
-
         self.player.particle.look(self.screen, self.map.RayWalls, self.player.rot)
         self.pathTracer()
         # self.player.particle.displayLights(self.screen,self)
         # self.player.particle.displayResponseLights(self.screen,self)
         self.screen.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
-
 
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -362,7 +372,6 @@ class Game:
         pg.display.flip()
         self.player.particle.on = False
 
-
     def events(self):
         # catch all events here
         for event in pg.event.get():
@@ -377,10 +386,8 @@ class Game:
                     self.player.particle.switchParticle()
 
 
-
 # create the game object
 g = Game(1)
 while True:
     g.new()
     g.run()
-
