@@ -180,14 +180,9 @@ class Game:
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
-                            # reflectionPoint = pixel final
-                            # funcion rota = []
-                            # for pintor
-                            pygame.draw.circle(self.screen, (255, 255, 255), array(intersectionPoint, int), 2)
 
-                            # hay que tirar otro rayo, pero los rayos se tiran con respecto a las paredes, entonces no
-                            # se como tirar el rayo sin una pared, y que pare, pero la funcion es vectorOperation.raraySegmentIntersect
-                            # print(reflexion)
+                            #Aqui iria for que pinta con los respectivos calculos del alpha
+
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
