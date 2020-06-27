@@ -11,6 +11,7 @@ from tilemap import *
 from Limits import *
 import threading
 from PIL import Image
+import math
 
 
 # HUD functions
@@ -26,7 +27,7 @@ class Game:
         self.objectType = objectType
         self.pixelMap = []
         self.pathTracerDone = False
-        self.animation = True
+        self.animation = False
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -111,8 +112,13 @@ class Game:
         self.paused = False
         self.night = True
 
+    def calculateDistance(self,x1, y1, x2, y2):
+        dist = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        return dist
+
     def pathTracer(self):
         reflectionSpace = None
+        reflectionNotDone = True
         minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
         if (minW < 0):
             minW = 0
@@ -174,33 +180,50 @@ class Game:
                                 newAngle = abs(newAngle - 360)
                                 angleDim = (20 - newAngle) / 20
 
-                            alpha = round((((LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE) * angleDim) * 255)
+                            alphaLenghtValue = (LIGHT_MAX_DISTANCE - length) / LIGHT_MAX_DISTANCE
+
+                            alpha = round(alphaLenghtValue * angleDim * 255)
 
                         else:
                             # reflexion
-                            if (reflectionSpace == None):
+                            if (reflectionNotDone):
+                                print("yes")
+
                                 reflectionSpace = self.getReflectionSpace(seg,source)
                                 # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
                                 
-                            intersectionPoint = self.getIntersectionPoint(point, dir, seg)
-                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
-                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
-                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
-                            pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
+                                intersectionPoint = self.getIntersectionPoint(point, dir, seg)
+                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
+                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
+                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
+                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
 
-                            # Get the width and hight of the image for iterating over
-                            pixelRGB = pix[intersectionPoint[0], intersectionPoint[1]]
+                                # Get the width and hight of the image for iterating over
+                                pixelRGB = pix[intersectionPoint[0], intersectionPoint[1]]
 
-                            red = (pixelRGB[0] + 255) // 2
-                            green = (pixelRGB[1] + 255) // 2
-                            blue = (pixelRGB[2] + 255) // 2
+                                red = (pixelRGB[0] + 255) // 2
+                                green = (pixelRGB[1] + 255) // 2
+                                blue = (pixelRGB[2] + 255) // 2
 
-                            RGBValue = [red, green, blue, 30]
+                                RGBValue = [red, green, blue, 0]
 
 
-                            for w in range(int(reflectionSpace[2][0]), int(reflectionSpace[1][0])):
-                                for z in range(int(reflectionSpace[1][1]), int(reflectionSpace[2][1])):
-                                    pygame.gfxdraw.pixel(self.fog, w, z, RGBValue)
+                                for w in range(int(reflectionSpace[0][0]), int(reflectionSpace[3][0])):
+                                    for z in range(int(reflectionSpace[0][1]), int(reflectionSpace[3][1])):
+
+                                        distance = self.calculateDistance(intersectionPoint[0], intersectionPoint[1],w,z)
+
+
+                                        if distance > MAX_REFLECTION_LENGHT:
+                                            distance = MAX_REFLECTION_LENGHT
+
+                                        alphaReflectionValue = ((MAX_REFLECTION_LENGHT - distance) / MAX_REFLECTION_LENGHT) * MAX_REFLECTION_BRIGHTNESS
+
+                                        RGBValue[3] = alphaReflectionValue
+
+                                        pygame.gfxdraw.pixel(self.fog, w, z, RGBValue)
+
+                                reflectionNotDone = False
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
