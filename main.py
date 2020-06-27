@@ -112,7 +112,7 @@ class Game:
         self.night = True
 
     def pathTracer(self):
-        lock = False
+        reflectionSpace = None
         minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
         if (minW < 0):
             minW = 0
@@ -178,10 +178,10 @@ class Game:
 
                         else:
                             # reflexion
-                            if (not lock):
+                            if (reflectionSpace == None):
                                 reflectionSpace = self.getReflectionSpace(seg,source)
                                 # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
-                                lock = True
+                                
                             intersectionPoint = self.getIntersectionPoint(point, dir, seg)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
