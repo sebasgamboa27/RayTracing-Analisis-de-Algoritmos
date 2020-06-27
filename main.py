@@ -196,8 +196,8 @@ class Game:
                                 # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
                                 
                                 intersectionPoint = self.getIntersectionPoint(point, dir, seg)
-                                pygame.draw.circle(self.screen, (255, 255, 255),reflectionSpace[0],3) #blanco
-                                pygame.draw.circle(self.screen, (255, 0, 0), reflectionSpace[1], 3) #rojo
+                                #pygame.draw.circle(self.screen, (255, 255, 255),reflectionSpace[0],3) #blanco
+                                #pygame.draw.circle(self.screen, (255, 0, 0), reflectionSpace[1], 3) #rojo
                                 #pygame.draw.circle(self.screen, (255, 255, 0), reflectionSpace[2], 3) #amarillo
                                 #pygame.draw.circle(self.screen, (0, 255, 0), reflectionSpace[3], 3) #verde
 
@@ -266,7 +266,7 @@ class Game:
                 point1[1] += 100
                 point2[1] += 100
         orderedArray = self.orderArray([point1, point2, point3, point4])
-        print(orderedArray)
+        #print(orderedArray)
         return array(orderedArray,int)
 
     def orderArray(self,array):
