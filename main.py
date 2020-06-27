@@ -26,7 +26,7 @@ class Game:
         self.objectType = objectType
         self.pixelMap = []
         self.pathTracerDone = False
-        self.animation = False
+        self.animation = True
 
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -112,7 +112,7 @@ class Game:
         self.night = True
 
     def pathTracer(self):
-
+        lock = False
         minW = self.player.pos[0] - LIGHT_MAX_DISTANCE
         if (minW < 0):
             minW = 0
@@ -178,9 +178,11 @@ class Game:
 
                         else:
                             # reflexion
+                            if (not lock):
+                                reflectionSpace = self.getReflectionSpace(seg,source)
+                                # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
+                                lock = True
                             intersectionPoint = self.getIntersectionPoint(point, dir, seg)
-                            reflectionSpace = self.getReflectionSpace(seg,
-                                                                      source)  # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
                             pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
@@ -236,7 +238,7 @@ class Game:
             else:
                 point1[1] += 100
                 point2[1] += 100
-        return [point1, point2, point3, point4]
+        return array([point1, point2, point3, point4],int)
 
     def getIntersectionPoint(self, point, dir, seg):
 
