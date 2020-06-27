@@ -16,6 +16,9 @@ import math
 
 # HUD functions
 
+
+
+
 class Game:
     def __init__(self, objectType):
         pg.mixer.pre_init(44100, -16, 4, 2048)
@@ -193,10 +196,10 @@ class Game:
                                 # relacion de lados del rectangulo(0-1,0-2,1-3,2-3)
                                 
                                 intersectionPoint = self.getIntersectionPoint(point, dir, seg)
-                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[1], 2)
-                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[0], reflectionSpace[2], 2)
-                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[1], reflectionSpace[3], 2)
-                                #pygame.draw.line(self.screen, (255, 255, 255), reflectionSpace[2], reflectionSpace[3], 2)
+                                pygame.draw.circle(self.screen, (255, 255, 255),reflectionSpace[0],3) #blanco
+                                pygame.draw.circle(self.screen, (255, 0, 0), reflectionSpace[1], 3) #rojo
+                                #pygame.draw.circle(self.screen, (255, 255, 0), reflectionSpace[2], 3) #amarillo
+                                #pygame.draw.circle(self.screen, (0, 255, 0), reflectionSpace[3], 3) #verde
 
                                 # Get the width and hight of the image for iterating over
                                 pixelRGB = pix[intersectionPoint[0], intersectionPoint[1]]
@@ -208,8 +211,8 @@ class Game:
                                 RGBValue = [red, green, blue, 0]
 
 
-                                for w in range(int(reflectionSpace[0][0]), int(reflectionSpace[3][0])):
-                                    for z in range(int(reflectionSpace[0][1]), int(reflectionSpace[3][1])):
+                                for w in range(int(reflectionSpace[0][0]), int(reflectionSpace[1][0])):
+                                    for z in range(int(reflectionSpace[0][1]), int(reflectionSpace[1][1])):
 
                                         distance = self.calculateDistance(intersectionPoint[0], intersectionPoint[1],w,z)
 
@@ -224,6 +227,7 @@ class Game:
                                         pygame.gfxdraw.pixel(self.fog, w, z, RGBValue)
 
                                 reflectionNotDone = False
+
 
                     if alpha < 0 or alpha > 255:
                         alpha = 0
@@ -261,7 +265,22 @@ class Game:
             else:
                 point1[1] += 100
                 point2[1] += 100
-        return array([point1, point2, point3, point4],int)
+        orderedArray = self.orderArray([point1, point2, point3, point4])
+        print(orderedArray)
+        return array(orderedArray,int)
+
+    def orderArray(self,array):
+        menor = array[0]
+        mayor = array[0]
+        for point1 in array:
+            for point2 in array:
+                if(point1[0]<point2[0] and point1[1]<point2[1]):
+                    menor = point1
+                elif(point1[0]>point2[0] and point1[1]>point2[1]):
+                    mayor = point1
+        return([menor,mayor])
+
+
 
     def getIntersectionPoint(self, point, dir, seg):
 
